@@ -25,17 +25,40 @@ inline int CTLCompareDouble(const void* a, const void* b)
     return *((double*)a) - *((double*)b);
 }
 
-int CTLCompareStringPointer(const void* a, const void* b)
-{
+inline bool CTLPredicateNotNull(const void *item) {
+    return item != NULL;
+} 
+
+int CTLCompareString(const void* a, const void* b) {
+    if (a == NULL && b == NULL) return EQ;
+    if (a != NULL && b == NULL) return GT;
+    if (a == NULL && b != NULL) return LT;
+
+    const unsigned char* aStr = a;
+    const unsigned char* bStr = b;
+    unsigned char aSum, bSum;
+    do {
+        aSum = *aStr++;
+        bSum = *bStr++;
+        if (aSum == 0) {
+            return aSum - bSum;
+        }
+    } while (aSum == bSum);
+    return aSum - bSum;
+}
+
+int CTLCompareStringPointer(const void* a, const void* b) {
+    if (a == NULL && b == NULL) return EQ;
+    if (a != NULL && b == NULL) return GT;
+    if (a == NULL && b != NULL) return LT;
+
     unsigned char* aStr = *(unsigned char**)a;
     unsigned char* bStr = *(unsigned char**)b;
     unsigned char aSum, bSum;
-    do
-    {
+    do {
         aSum = *aStr++;
         bSum = *bStr++;
-        if (aSum == 0)
-        {
+        if (aSum == 0) {
             return aSum - bSum;
         }
     } while (aSum == bSum);

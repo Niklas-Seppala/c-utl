@@ -3,21 +3,6 @@
 #include "stdlib.h"
 #include "cutils/compare.h"
 
-// ----------------------------------------------
-//         Comparison functions
-// ----------------------------------------------
-int CTLCompareInt(const void* a, const void* b);
-
-int CTLCompareFloat(const void* a, const void *b);
-
-int CTLCompareLong(const void* a, const void *b);
-
-int CTLCompareChar(const void* a, const void *b);
-
-int CTLCompareLong(const void* a, const void *b);
-
-int CTLCompareStringPointer(const void *a, const void *b);
-
 
 // ----------------------------------------------
 //              Sort functions

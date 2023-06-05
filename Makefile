@@ -1,4 +1,4 @@
-COMPLETE_PRINT=\033[1;32mSuccess\n\033[0m\033[1m${OUT_DIR}${EXE_NAME}\033[0m
+COMPLETE_PRINT=\033[1;32mSuccess \033[0m
 
 OBJ_DIR:=./obj/
 OUT_DIR:=./out/
@@ -32,7 +32,8 @@ build: directories ${BINS}
 	${CC} ${OBJS} -o ${OUT_DIR}${EXE_NAME}
 	@mv ./*.o ${OBJ_DIR}
 	@echo "$(COMPLETE_PRINT)"
-	@echo "\n"
+	@echo $(shell git rev-parse --short HEAD)
+	@echo ${OUT_DIR}${EXE_NAME}
 
 %.o: ${SRC_DIR}%.c
 	${CC} -Iinclude ${CC_FLAGS} -c $< -o $@
