@@ -15,7 +15,7 @@ MKDIR_P = mkdir -p
 RT_NULL_CHECKS=-DRT_NULL_CHECKS -DRT_NULL_KILLS -DCTL_MERGESORT_DYNAMIC_ALLOC
 CC_WARN=-Wall -Wshadow -Wextra -Wformat=2 -Wpedantic -fmax-errors=10 -Wno-unknown-pragmas
 CC_FLAGS=${CC_WARN} -O0 -std=gnu99 ${DEBUG} ${RT_NULL_CHECKS}
-PROJECT_NAME=cutils
+PROJECT_NAME=ctl
 BUILD=0.0.1
 EXE_NAME=${PROJECT_NAME}-${BUILD}
 
@@ -56,4 +56,10 @@ clean:
 	@rm $(OBJ_DIR)* $(OUT_DIR)* *.o 2>/dev/null || true
 
 valgrind: build
-	valgrind --leak-check=full ${OUT_DIR}${EXE_NAME} 
+	valgrind --leak-check=full ${OUT_DIR}${EXE_NAME}
+
+unit-test:
+	@make runtest -C ./test
+
+memcheck-test:
+	@make memcheck -C ./test
