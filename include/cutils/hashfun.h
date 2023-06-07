@@ -4,7 +4,7 @@
 #include "inttypes.h"
 #include "stdlib.h"
 
-typedef uint64_t (*CTLHashFunction)(const void* key, const size_t len);
+typedef uint64_t (*CTLHashFunction)(const void *key, const size_t len);
 
 uint64_t CTLHashDJB2_STRING(const void *key, const size_t len);
 
@@ -12,4 +12,4 @@ uint64_t CTLHashFNV(const void *key, const size_t len);
 
 uint64_t CTLHashSDBM_STRING(const void *key, const size_t len);
 
-#endif // CTL_HASHFUN_H
+#endif  // CTL_HASHFUN_H

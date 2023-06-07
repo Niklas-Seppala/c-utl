@@ -56,4 +56,4 @@ clean:
 	@rm $(OBJ_DIR)* $(OUT_DIR)* *.o 2>/dev/null || true
 
 valgrind: build
-	valgrind ${OUT_DIR}${EXE_NAME} ${RUN_ARGS}
+	valgrind --leak-check=full ${OUT_DIR}${EXE_NAME} 

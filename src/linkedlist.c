@@ -1,7 +1,8 @@
 #include "cutils/linkedlist.h"
+
 #include "cutils.h"
-#include "stdint.h"
 #include "cutils/error.h"
+#include "stdint.h"
 
 #define EMPTY 0
 
@@ -11,9 +12,10 @@ struct __CTLLinkedListNode {
 };
 
 struct __CTLLinkedList {
-    size_t size;
     struct __CTLLinkedListNode *head;
     struct __CTLLinkedListNode *tail;
+    CTLIterator iter;
+    size_t size;
 };
 
 #ifdef DEBUG
@@ -21,7 +23,7 @@ void CTLLinkedListDebugPrint(CTLLinkedList list) {
     struct __CTLLinkedListNode *head = list->head;
     printf("----------------------------------------------------\n");
     printf("LinkedList %p size: %ld\n", (void *)list, list->size);
-    printf("head: %p tail: %p\n", (void*)list->head, (void*)list->tail);
+    printf("head: %p tail: %p\n", (void *)list->head, (void *)list->tail);
     printf("entries: ");
     while (head != NULL) {
         printf("%p", (void *)head->entry);
@@ -36,7 +38,7 @@ void CTLLinkedListDebugPrintf(CTLLinkedList list, CTLObjectToString provider) {
     struct __CTLLinkedListNode *head = list->head;
     printf("----------------------------------------------------\n");
     printf("LinkedList %p size: %ld\n", (void *)list, list->size);
-    printf("head: %p tail: %p\n", (void*)list->head, (void*)list->tail);
+    printf("head: %p tail: %p\n", (void *)list->head, (void *)list->tail);
     printf("entries: ");
     while (head != NULL) {
         printf("(%s)", provider(head->entry));
@@ -57,6 +59,7 @@ CTLLinkedList CTLLinkedListCreate(void) {
     list->head = NULL;
     list->tail = NULL;
     list->size = EMPTY;
+    list->iter = NULL;
     return list;
 }
 
@@ -68,7 +71,8 @@ void CTLLinkedListFree(CTLLinkedList *list) {
         free(head);
         head = next;
     }
-    free(*list);
+    free((void *)(*list)->iter);
+    free((void *)*list);
     *list = NULL;
 }
 
@@ -97,7 +101,6 @@ bool CTLLinkedListIsEmpty(CTLLinkedList list) {
     NOT_NULL(list);
     return list->size == EMPTY;
 }
-
 
 const void *CTLLinkedListRemoveAt(CTLLinkedList list, size_t atIndex) {
     NOT_NULL(list);
@@ -144,6 +147,15 @@ size_t CTLLinkedListInsert(CTLLinkedList list, const void *entry, size_t atIndex
     return slot;
 }
 
+void CTLLinkedListIteratorReset(CTLLinkedList list) {
+    CTLIteratorResetHead(list->iter, (CTLIterable)list->head);
+}
+
+inline CTLIterator CTLLinkedListIterator(CTLLinkedList list) {
+    list->iter = CTLIteratorAllocateNodeIterator((CTLIterable)list->head);
+    return list->iter;
+}
+
 void CTLLinkedListAdd(CTLLinkedList list, const void *entry) {
     NOT_NULL(list);
     struct __CTLLinkedListNode *node = __CTLAllocateEntryNode(entry);
@@ -173,7 +185,6 @@ void CTLLinkedListAddFirst(CTLLinkedList list, const void *entry) {
     }
     list->size++;
 }
-
 
 CTLLinkedList CTLLinkedListFilter(CTLLinkedList list, CTLpredicate filter) {
     NOT_NULL(list);
@@ -217,6 +228,7 @@ const void *CTLLinkedListGetFirst(CTLLinkedList list) {
     if (CTLLinkedListIsEmpty(list)) {
         return NULL;
     } else {
+        NOT_NULL(list->head);
         return list->head->entry;
     }
 }
@@ -230,15 +242,16 @@ const void *CTLLinkedListGetLast(CTLLinkedList list) {
     }
 }
 
-const void *CTLLinkedListFind(CTLLinkedList list, CTLpredicate predicate) {
+const void *CTLLinkedListFind(CTLLinkedList list, const void *entry, CTLCompareFunction compareFunction) {
     NOT_NULL(list);
-    NOT_NULL(predicate);
+    NOT_NULL(entry);
+    NOT_NULL(compareFunction);
     if (CTLLinkedListIsEmpty(list)) {
         return NULL;
     }
     struct __CTLLinkedListNode *head = list->head;
     while (head != NULL) {
-        if (predicate(head->entry)) {
+        if (compareFunction(head->entry, entry) == EQ) {
             return head->entry;
         }
         head = head->next;
@@ -261,19 +274,21 @@ CTLLinkedList CTLLinkedListReverse(CTLLinkedList list) {
     return list;
 }
 
-void CTLLinkedListRemove(CTLLinkedList list, const void *entry, CTLCompareFunction compareFunction) {
+const void *CTLLinkedListRemove(CTLLinkedList list, const void *entry, CTLCompareFunction compareFunction) {
     NOT_NULL(list);
     NOT_NULL(compareFunction);
     struct __CTLLinkedListNode *head = list->head;
     struct __CTLLinkedListNode *prev = NULL;
     while (head != NULL) {
-        if (compareFunction(entry, head->entry)) {
+        if (compareFunction(head->entry, entry) == EQ) {
+            const void *value = head->entry;
             __CTLUnlinkAndFreeNode(list, &head, prev);
-            return;
+            return value;
         }
         prev = head;
         head = head->next;
     }
+    return NULL;
 }
 
 int64_t CTLLinkedListIndexOf(CTLLinkedList list, const void *entry, CTLCompareFunction compareFuntion) {
@@ -289,7 +304,7 @@ int64_t CTLLinkedListIndexOf(CTLLinkedList list, const void *entry, CTLCompareFu
         index++;
     }
     return -1;
-} 
+}
 
 bool CTLLinkedListContains(CTLLinkedList list, const void *entry, CTLCompareFunction compareFuntion) {
     NOT_NULL(list);
@@ -325,7 +340,6 @@ static inline void __CTLUnlinkAndFreeNode(CTLLinkedList list, struct __CTLLinked
     free(*node);
     *node = NULL;
 }
-
 
 inline static struct __CTLLinkedListNode *__CTLAllocateEntryNode(const void *entry) {
     struct __CTLLinkedListNode *node = calloc(1, sizeof(struct __CTLLinkedListNode));

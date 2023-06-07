@@ -1,33 +1,28 @@
 #include "cutils/sort.h"
 
-inline int CTLCompareInt(const void* a, const void* b)
-{
+inline int CTLCompareInt(const void* a, const void* b) {
     return *((int*)a) - *((int*)b);
 }
 
-inline int CTLCompareFloat(const void* a, const void* b)
-{
+inline int CTLCompareFloat(const void* a, const void* b) {
     return *((float*)a) - *((float*)b);
 }
 
-inline int CTLCompareLong(const void* a, const void* b)
-{
+inline int CTLCompareLong(const void* a, const void* b) {
     return *((long*)a) - *((long*)b);
 }
 
-inline int CTLCompareChar(const void* a, const void* b)
-{
+inline int CTLCompareChar(const void* a, const void* b) {
     return *((char*)a) - *((char*)b);
 }
 
-inline int CTLCompareDouble(const void* a, const void* b)
-{
+inline int CTLCompareDouble(const void* a, const void* b) {
     return *((double*)a) - *((double*)b);
 }
 
-inline bool CTLPredicateNotNull(const void *item) {
+inline bool CTLPredicateNotNull(const void* item) {
     return item != NULL;
-} 
+}
 
 int CTLCompareString(const void* a, const void* b) {
     if (a == NULL && b == NULL) return EQ;

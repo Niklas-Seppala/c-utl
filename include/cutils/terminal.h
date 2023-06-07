@@ -13,4 +13,4 @@
 #define TERM_WHT "\033[0;37m"
 #define TERM_RSET "\033[0m"
 
-#endif // GUARD_TERMINAL_H
+#endif  // GUARD_TERMINAL_H

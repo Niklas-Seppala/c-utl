@@ -1,27 +1,26 @@
 #include "cutils/sort.h"
-#include "string.h"
-#include "stdio.h"
-#include "assert.h"
 
-static inline void copyFromArray(char *dest, const char *src,  size_t *mergeIndex,
-                                 size_t *srcIndex, size_t entrySizeInBytes) {
+#include "assert.h"
+#include "stdio.h"
+#include "string.h"
+
+static inline void copyFromArray(char* dest, const char* src, size_t* mergeIndex,
+                                 size_t* srcIndex, size_t entrySizeInBytes) {
     memcpy(dest + *mergeIndex, src + *srcIndex, entrySizeInBytes);
     *srcIndex += entrySizeInBytes;
 }
 
-static inline void __CTLCopyRemaining(char *dest, const char *src,  size_t *mergeIndex,
-                                      size_t *srcIndex, size_t srcInBytes,
+static inline void __CTLCopyRemaining(char* dest, const char* src, size_t* mergeIndex,
+                                      size_t* srcIndex, size_t srcInBytes,
                                       size_t entrySizeInBytes) {
-    while (*srcIndex < srcInBytes)
-    {
+    while (*srcIndex < srcInBytes) {
         copyFromArray(dest, src, mergeIndex, srcIndex, entrySizeInBytes);
         *mergeIndex += entrySizeInBytes;
     }
 }
 
 static void __CTLMerge(char* array, size_t entrySizeInBytes, size_t left,
-                        size_t split, size_t right, CTLCompareFunction cmp)
-{
+                       size_t split, size_t right, CTLCompareFunction cmp) {
     const size_t leftArrayByteSize = (split - left + 1) * entrySizeInBytes;
 #ifdef CTL_MERGESORT_DYNAMIC_ALLOC
     char* leftArray = malloc(leftArrayByteSize);
@@ -38,15 +37,13 @@ static void __CTLMerge(char* array, size_t entrySizeInBytes, size_t left,
     char* rightArray = rStatic;
 #endif
 
-    for (size_t i = 0; i < leftArrayByteSize; i += entrySizeInBytes)
-    {
+    for (size_t i = 0; i < leftArrayByteSize; i += entrySizeInBytes) {
         void* src = array + left * entrySizeInBytes + i;
         void* dest = leftArray + i;
         memcpy(dest, src, entrySizeInBytes);
     }
 
-    for (size_t i = 0; i < rightArrayByteSize; i += entrySizeInBytes)
-    {
+    for (size_t i = 0; i < rightArrayByteSize; i += entrySizeInBytes) {
         void* src = array + (split + 1) * entrySizeInBytes + i;
         void* dest = rightArray + i;
         memcpy(dest, src, entrySizeInBytes);
@@ -54,8 +51,7 @@ static void __CTLMerge(char* array, size_t entrySizeInBytes, size_t left,
 
     size_t leftIndex = 0, rightIndex = 0;
     size_t mergeIndex = left * entrySizeInBytes;
-    while (leftIndex < leftArrayByteSize && rightIndex < rightArrayByteSize)
-    {
+    while (leftIndex < leftArrayByteSize && rightIndex < rightArrayByteSize) {
         if (cmp(leftArray + leftIndex, rightArray + rightIndex) <= 0)
             copyFromArray(array, leftArray, &mergeIndex, &leftIndex, entrySizeInBytes);
         else
@@ -73,10 +69,8 @@ static void __CTLMerge(char* array, size_t entrySizeInBytes, size_t left,
 #endif
 }
 
-static void __CTLMergeSort(void* array, size_t entrySizeInBytes, size_t left, size_t right, CTLCompareFunction cmp)
-{
-    if (left < right)
-    {
+static void __CTLMergeSort(void* array, size_t entrySizeInBytes, size_t left, size_t right, CTLCompareFunction cmp) {
+    if (left < right) {
         size_t split = left + (right - left) / 2;
         __CTLMergeSort(array, entrySizeInBytes, left, split, cmp);
         __CTLMergeSort(array, entrySizeInBytes, split + 1, right, cmp);
@@ -84,7 +78,6 @@ static void __CTLMergeSort(void* array, size_t entrySizeInBytes, size_t left, si
     }
 }
 
-void CTLMergeSort(void* array, size_t arraySize, size_t entrySizeInBytes, CTLCompareFunction cmp)
-{
+void CTLMergeSort(void* array, size_t arraySize, size_t entrySizeInBytes, CTLCompareFunction cmp) {
     __CTLMergeSort(array, entrySizeInBytes, 0, arraySize - 1, cmp);
 }

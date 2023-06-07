@@ -1,13 +1,27 @@
-#include "cutils/hashfun.h"
 #include "cutils/hashmap.h"
+#include "cutils/compare.h"
+#include "cutils/hashfun.h"
+#include "cutils/linkedlist.h"
 #include "cutils/math.h"
 #include "cutils.h"
 #include "stdio.h"
 
 const int MIN_CAPACITY = 16;
 
+typedef struct kv {
+    const void *key;
+    const void *value;
+} KeyValue;
 
-static uint32_t getIndex(CTLHashMap map, const void *key, size_t keylen);
+inline int CTLCompareStringKey(const void *entry, const void *key) {
+    return CTLCompareString(((KeyValue *)entry)->key, key);
+}
+
+inline static uint32_t getIndex(CTLHashMap map, const void *key, size_t keylen);
+inline static const KeyValue *allocateKeyValue(const void *key, const void *value);
+static void storeKeyValueToBucket(CTLHashMap map, CTLLinkedList bucket, const int32_t index, const void *key, const void *entry) ;
+inline static float calcLoad(CTLHashMap map);
+
 
 struct __CTLHashMap {
     uint32_t size;
@@ -15,9 +29,10 @@ struct __CTLHashMap {
     float loadFactor;
     const void **hashContainer;
     CTLHashFunction hashFunction;
+    CTLCompareFunction keyCompareFunction;
 };
 
-CTLHashMap CTLHashMapCreate(const int initialSize, float loadFactor, CTLHashFunction hashFunction) {
+CTLHashMap CTLHashMapCreate(const int initialSize, float loadFactor, CTLHashFunction hashFunction, CTLCompareFunction keyCompareFunction) {
     CTLHashMap map = calloc(1, sizeof(struct __CTLHashMap));
 
     uint32_t capacity = roundToPow2(initialSize);
@@ -27,6 +42,7 @@ CTLHashMap CTLHashMapCreate(const int initialSize, float loadFactor, CTLHashFunc
     map->capacity = capacity;
     map->loadFactor = loadFactor;
     map->hashFunction = hashFunction;
+    map->keyCompareFunction = keyCompareFunction;
 
     return map;
 }
@@ -38,9 +54,19 @@ void CTLHashMapFree(CTLHashMap map) {
 
 #ifdef DEBUG
 void CTLHashMapDebugPrint(CTLHashMap map) {
+    int bucketCount = 0;
+    for (size_t i = 0; i < map->capacity; i++) {
+        const CTLLinkedList bucket = (void *)map->hashContainer[i];
+        if (bucket != NULL) {
+            bucketCount++;
+        }
+    }
+    float load = calcLoad(map);
     printf("CTLHashMap %p ", (void *)map);
     printf("capacity: %u ", map->capacity);
     printf("loadFactor: %f ", map->loadFactor);
+    printf("bucket count: %d ", bucketCount);
+    printf("current load: %f ", load);
     printf("hash function: 0x%lx ", (uintptr_t)map->hashFunction);
     printf("size: %d\n", map->size);
 }
@@ -59,69 +85,150 @@ bool CTLHashMapContains(CTLHashMap map, void *key, size_t keylen) {
 }
 
 const void *CTLHashMapGet(CTLHashMap map, const void *key, size_t keylen) {
-    const uint64_t hash = map->hashFunction(key, keylen);
-    const uint32_t index = hash % map->capacity;
-    return map->hashContainer[index];
-}
-
-const void *CTLHashMapPut(CTLHashMap map, const void* key, size_t keylen, const void *entry) {
-    const uint64_t hash = map->hashFunction(key, keylen);
-    const uint32_t index = hash % map->capacity;
-
-    if (map->hashContainer[index] == NULL) {
-        map->hashContainer[index] = (void *)entry;
-        map->size++;
-        return (void *)entry;
+    const uint32_t index = getIndex(map, key, keylen);
+    const CTLLinkedList bucket = (void *)map->hashContainer[index];
+    if (bucket != NULL) {
+        const KeyValue *keyValue = CTLLinkedListFind(bucket, key, map->keyCompareFunction);
+        if (keyValue != NULL) {
+            return keyValue->value;
+        }
     }
-    return map->hashContainer[index];
+    return NULL;
 }
 
+const void *CTLHashMapPut(CTLHashMap map, const void *key, size_t keylen, const void *value) {
+    if (calcLoad(map) > map->loadFactor) {
+        const size_t newCap = map->capacity << 1;
+        map->hashContainer = calloc(sizeof(uintptr_t), newCap);
+        TODO("IMPLEMEN");
+        for (size_t i = 0; i < map->capacity; i++) {
+            CTLLinkedList bucket = (void *)map->hashContainer[i];
+            if (bucket != NULL) {
+                const KeyValue *keyValuePair;
+                while ((keyValuePair = CTLLinkedListRemoveAt(bucket, 0))) {
+                    
+                }
+            }
+        }
+    }
+
+    const uint32_t index = getIndex(map, key, keylen);
+    CTLLinkedList bucket = (void *)map->hashContainer[index];
+    if (bucket == NULL) {
+        storeKeyValueToBucket(map, bucket, index, key, value);
+        return value;
+    } else {
+        const KeyValue *existing = CTLLinkedListRemove(bucket, key, map->keyCompareFunction);
+        storeKeyValueToBucket(map, bucket, index, key, value);
+        if (existing) {
+            return existing->value;
+        } else {
+            return NULL;
+        }
+    }
+}
 
 const void *CTLHashMapRemove(CTLHashMap map, const void *key, size_t keylen) {
-    const uint64_t hash = map->hashFunction(key, keylen);
-    const uint32_t index = hash % map->capacity;
-    const void *result =  map->hashContainer[index];
-    if (result != NULL) {
-        map->size--;
-        map->hashContainer[index] = NULL;
+    const uint32_t index = getIndex(map, key, keylen);
+    const CTLLinkedList bucket = (void *)map->hashContainer[index];
+    if (bucket != NULL) {
+        const KeyValue *existing = CTLLinkedListRemove(bucket, key, map->keyCompareFunction);
+        if (existing != NULL) {
+            const void *value = existing->value;
+            free((void *)existing);
+            map->size--;
+            return value;
+        }
     }
-    return result;
+    return NULL;
 }
 
-const void *CTLHashMapPutIfAbsent(CTLHashMap map, const void *key, const size_t keylen, const void *entry) {
+const void *CTLHashMapPutIfAbsent(CTLHashMap map, const void *key, const size_t keylen, const void *value) {
     uint32_t index = getIndex(map, key, keylen);
-    const void *existing = map->hashContainer[index];
-    const void *result = existing;
-    if (existing == NULL) {
-        map->hashContainer[index] = entry;
-        result = (void*)entry;
+    CTLLinkedList bucket = (void *)map->hashContainer[index];
+    if (bucket == NULL) {
+        storeKeyValueToBucket(map, bucket, index, key, value);
+        return value;
+    } else {
+        const KeyValue *existing = CTLLinkedListFind(bucket, key, map->keyCompareFunction);
+        if (existing == NULL) {
+            storeKeyValueToBucket(map, bucket, index, key, value);
+            return existing;
+        } else {
+            return existing->value;
+        }
     }
-    return result;;
 }
 
 
-bool CTLHashMapReplace(CTLHashMap map, const void *key, const size_t keylen, const void *entry) {
+bool CTLHashMapReplace(CTLHashMap map, const void *key, const size_t keylen, const void *value) {
     uint32_t index = getIndex(map, key, keylen);
-    const void * existing = map->hashContainer[index];
-    bool wasReplaced = existing != NULL;
-    map->hashContainer[index] = entry;
-    return wasReplaced;
+    CTLLinkedList bucket = (void *)map->hashContainer[index];
+    if (bucket == NULL) {
+        storeKeyValueToBucket(map, bucket, index, key, value);
+        return false;
+    } else {
+        const void *existing = CTLLinkedListRemove(bucket, key, map->keyCompareFunction);
+        storeKeyValueToBucket(map, bucket, index, key, value);
+        if (existing) {
+            free((void *)existing);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
-void CTLHashMapKeys(CTLHashMap map, void** keys) {
-    NOT_IMPLEMENTED;
-    UNUSED_PARAMETER(keys);
-    UNUSED_PARAMETER(map);
+CTLLinkedList CTLHashMapAllocateKeyList(CTLHashMap map) {
+    CTLLinkedList keySet = CTLLinkedListCreate();
+    for (size_t i = 0; i < map->capacity; i++) {
+        CTLLinkedList bucket = (void *)map->hashContainer[i];
+        if (bucket != NULL) {
+            CTLIterator iterator = CTLLinkedListIterator(bucket);
+            while (CTLIteratorHasNext(iterator)) {
+                const KeyValue *kv = CTLIteratorNext(iterator);
+                CTLLinkedListAdd(keySet, kv->key);
+            }
+        }
+    }
+    return keySet;
 }
 
 void CTLHashMapClear(CTLHashMap map) {
     for (size_t i = 0; i < map->capacity; i++) {
+        CTLLinkedList bucket = (void *)map->hashContainer[i];
+        if (bucket != NULL) {
+            const KeyValue *keyValuePair;
+            while ((keyValuePair = CTLLinkedListRemoveAt(bucket, 0))) {
+                free((void *)keyValuePair);
+            }
+            CTLLinkedListFree(&bucket);
+        }
         map->hashContainer[i] = NULL;
     }
     map->size = 0;
 }
 
-static uint32_t getIndex(CTLHashMap map, const void *key, size_t keylen) {
+inline static uint32_t getIndex(CTLHashMap map, const void *key, size_t keylen) {
     const uint64_t hash = map->hashFunction(key, keylen);
     return hash % map->capacity;
+}
+
+static void storeKeyValueToBucket(CTLHashMap map, CTLLinkedList bucket, const int32_t index, const void *key, const void *value) {
+    if (bucket == NULL) bucket = CTLLinkedListCreate();
+    const KeyValue *keyValue = allocateKeyValue(key, value);
+    CTLLinkedListAdd(bucket, keyValue);
+    map->hashContainer[index] = bucket;
+    map->size++;
+}
+
+inline static float calcLoad(CTLHashMap map) {
+    return map->size / (float)map->capacity;
+}
+
+inline static const KeyValue *allocateKeyValue(const void *key, const void *value) {
+    KeyValue *keyValue = calloc(sizeof(KeyValue), 1);
+    keyValue->key = key;
+    keyValue->value = value;
+    return keyValue;
 }
