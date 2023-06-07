@@ -18,7 +18,6 @@ int main(void)
 {
     CTLLogSetup();
     int fail_count = 0;
-    int total_count = 0;
 
     Suite *suite = suite_create("CTL");
 
@@ -28,18 +27,10 @@ int main(void)
 
     srunner_run_all(runner, CK_NORMAL);
     fail_count = srunner_ntests_failed(runner);
-    total_count = srunner_ntests_run(runner);
     srunner_free(runner);
 
     const int success = fail_count == 0;
     const char *DIVIDER = success ? SUCCESS_DIVIDER : FAILURE_DIVIDER;
-
-    printf("\n%s", DIVIDER);
-    printf(" %.1f%%    TOTAL RUN: %d    PASSED: %d    FAILED: %d\n",
-           (double)total_count / (double)(total_count - fail_count) * 100.0,
-           total_count, 
-           total_count - fail_count, fail_count);
-    
     printf("%s", DIVIDER);
 
     CTLLogTeardown();

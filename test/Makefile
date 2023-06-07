@@ -24,19 +24,19 @@ BINS := $(SRC:%.c=%)
 COMPLETE_PRINT=\033[1;32mSuccess \033[0m
 
 suite:
-	@${CC} -c ${CC_FLAGS} ${HEADERS} testlinkedlist.c -o ${OBJ_DIR}testlinkedlist.o
-	@${CC} -c ${CC_FLAGS} ${HEADERS} test.c -o ${OBJ_DIR}test.o
+	${CC} -c ${CC_FLAGS} ${HEADERS} testlinkedlist.c -o ${OBJ_DIR}testlinkedlist.o
+	${CC} -c ${CC_FLAGS} ${HEADERS} test.c -o ${OBJ_DIR}test.o
 
 build: suite ${BINS}
-	@${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
+	${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
 
 %: %.o
 	
 %.o: ${SRC_DIR}%.c
-	@${CC} -c ${CC_FLAGS} ${HEADERS} $< -o ${OBJ_DIR}$@
+	${CC} -c ${CC_FLAGS} ${HEADERS} $< -o ${OBJ_DIR}$@
 
 runtest: build
-	@${OUT_DIR}${TEST_NAME}
+	${OUT_DIR}${TEST_NAME}
 
 memcheck: build
 	@valgrind --leak-check=full --show-leak-kinds=all --log-file=../out/memcheck.log ${OUT_DIR}${TEST_NAME}
