@@ -1,10 +1,9 @@
 #if !defined(CTL_HASHMAP_H)
 #define CTL_HASHMAP_H
-#include "cutils/compare.h"
-#include "cutils/linkedlist.h"
+#include "ctl/compare.h"
+#include "ctl/linkedlist.h"
+#include "ctl.h"
 #include "hashfun.h"
-#include "stdbool.h"
-#include "stdlib.h"
 
 typedef struct __CTLHashMap *CTLHashMap;
 

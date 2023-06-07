@@ -1,10 +1,9 @@
-#include "cutils/compare.h"
-#include "cutils/error.h"
-#include "cutils/hashfun.h"
-#include "cutils/hashmap.h"
-#include "cutils/linkedlist.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include "ctl/compare.h"
+#include "ctl/error.h"
+#include "ctl/hashfun.h"
+#include "ctl/hashmap.h"
+#include "ctl/linkedlist.h"
+#include "ctl.h"
 
 typedef struct house {
     int rooms;

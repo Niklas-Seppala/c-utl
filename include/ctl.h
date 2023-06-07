@@ -1,9 +1,12 @@
 #if !defined(CTUL_H)
 #define CTUL_H
 #include "stdio.h"
-#include "stdlib.h"
 #include "stdbool.h"
-#include "cutils/terminal.h"
+#include "stdint.h"
+#include "stdlib.h"
+
+#include "ctl/terminal.h"
+
 
 #ifndef __FUNCTION_NAME__
 #ifdef WIN32  // WINDOWS

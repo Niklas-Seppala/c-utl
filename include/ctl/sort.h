@@ -1,6 +1,6 @@
 #if !defined(CUTL_SORT_H)
 #define CUTL_SORT_H
-#include "cutils/compare.h"
+#include "ctl/compare.h"
 #include "stdlib.h"
 
 // ----------------------------------------------

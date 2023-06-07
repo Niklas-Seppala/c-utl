@@ -1,7 +1,5 @@
-#include "cutils/hashfun.h"
-
-#include "cutils.h"
-#include "stdlib.h"
+#include "ctl/hashfun.h"
+#include "ctl.h"
 
 uint64_t CTLHashDJB2_STRING(const void *key, const size_t len) {
     UNUSED_PARAMETER(len);

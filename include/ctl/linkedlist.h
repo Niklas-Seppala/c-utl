@@ -1,10 +1,8 @@
 #if !defined(CTL_LINKEDLIST_H)
 #define CTL_LINKEDLIST_H
-#include "cutils/compare.h"
-#include "cutils/iterator.h"
-#include "stdbool.h"
-#include "stdint.h"
-#include "stdlib.h"
+#include "ctl/compare.h"
+#include "ctl/iterator.h"
+#include "ctl.h"
 
 typedef struct __CTLLinkedList *CTLLinkedList;
 

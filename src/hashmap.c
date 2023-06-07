@@ -1,9 +1,9 @@
-#include "cutils/hashmap.h"
-#include "cutils/compare.h"
-#include "cutils/hashfun.h"
-#include "cutils/linkedlist.h"
-#include "cutils/math.h"
-#include "cutils.h"
+#include "ctl/hashmap.h"
+#include "ctl/compare.h"
+#include "ctl/hashfun.h"
+#include "ctl/linkedlist.h"
+#include "ctl/math.h"
+#include "ctl.h"
 #include "stdio.h"
 
 const int MIN_CAPACITY = 16;

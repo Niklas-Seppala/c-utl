@@ -1,5 +1,8 @@
-#include "cutils.h"
-#include "cutils/terminal.h"
+#if !defined(CTL_ERROR_H)
+#define CTL_ERROR_H
+
+#include "ctl.h"
+#include "ctl/terminal.h"
 #include "stdio.h"
 
 // Prints error with information where it happened.
@@ -30,3 +33,5 @@
 #else
 #define NOT_NULL(ptr) UNDEFINED
 #endif
+
+#endif // CTL_ERROR_H
