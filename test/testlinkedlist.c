@@ -4,7 +4,7 @@
 
 START_TEST(test_linked_list_alloc) {
     CTLLinkedList list = CTLLinkedListCreate();
-    ck_assert_ptr_ne(NULL, list);
+    ck_assert_ptr_ne(NULL, NULL);
     ck_assert_int_eq(0, CTLLinkedListSize(list));
     CTLLinkedListFree(&list);
 }
