@@ -4,6 +4,7 @@
 #include "ctl/hashmap.h"
 #include "ctl/linkedlist.h"
 #include "ctl.h"
+#include "ctl/io/logger.h"
 
 typedef struct house {
     int rooms;
@@ -25,6 +26,18 @@ const char *houseToString(const void *house) {
 }
 
 int main() {
+
+    CTLLogSetup();
+    CTLLogPrintf(CTL_TRACE, "%s", "this is trace");
+    CTLLogPrintf(CTL_TEST, "%s", "this is test");
+    CTLLogPrintf(CTL_DEBUG, "%s", "this is debug");
+    CTLLogPrintf(CTL_INFO, "%s", "this is info");
+    CTLLogPrintf(CTL_WARN, "%s", "this is warning");
+    CTLLogPrintf(CTL_ERROR, "%s", "this is error");
+    CTLLogPrintf(CTL_FATAL, "%s", "this is fatal error");
+
+    CTLLogTeardown();
+
     const char *key1 = "key";
     const char *key2 = "key22";
     const char *value1 = "value1";
