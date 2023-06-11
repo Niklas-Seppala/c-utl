@@ -1,0 +1,17 @@
+name: Memory Check
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: install
+      run: sudo apt-get install check valgrind
+    - name: make memcheck-test
+      run: make memcheck-test

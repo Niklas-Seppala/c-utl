@@ -16,8 +16,8 @@ typedef enum CTL_LOG {
 void CTLLogPrintf(const CTLLogLevel level, const char *format, ...);
 
 #ifdef DEBUG
-    #define CTLLogTrace(format, ...) CTLLogPrintf(TR_LOG_TRACE, format, __VA_ARGS__)
-    #define CTLLogDebug(format, ...) CTLLogPrintf(TR_LOG_DEBUG, format, __VA_ARGS__)
+    #define CTLLogTrace(format, ...) CTLLogPrintf(CTL_TRACE, format, __VA_ARGS__)
+    #define CTLLogDebug(format, ...) CTLLogPrintf(CTL_DEBUG, format, __VA_ARGS__)
 #else
     #define CTLLogTrace(format, ...) UNDEFINED
     #define CTLLogDebug(format, ...) UNDEFINED

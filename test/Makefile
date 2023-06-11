@@ -10,7 +10,7 @@ TEST=-lcheck -lm -lpthread -lrt -lsubunit
 DEBUG=-g -DDEBUG
 
 CC_WARN=-Wall -Wshadow -Wextra -Wformat=2 -Wpedantic -fmax-errors=10 -Wno-unknown-pragmas
-CC_FLAGS=${CC_WARN} -O0 -std=gnu99 ${DEBUG}
+CC_FLAGS=${CC_WARN} -O0 -std=gnu99 ${DEBUG} -DRT_NULL_CHECKS
 PROJECT_NAME=ctl
 BUILD=0.0.1
 EXE_NAME=${PROJECT_NAME}-${BUILD}
@@ -24,27 +24,23 @@ BINS := $(SRC:%.c=%)
 COMPLETE_PRINT=\033[1;32mSuccess \033[0m
 
 suite:
-	${CC} -c ${CC_FLAGS} ${HEADERS} testlinkedlist.c -o ${OBJ_DIR}testlinkedlist.o
-	${CC} -c ${CC_FLAGS} ${HEADERS} test.c -o ${OBJ_DIR}test.o
+	@${CC} -c ${CC_FLAGS} ${HEADERS} testlinkedlist.c -o ${OBJ_DIR}testlinkedlist.o
+	@${CC} -c ${CC_FLAGS} ${HEADERS} test.c -o ${OBJ_DIR}test.o
 
 build: suite ${BINS}
-	${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
+	@${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
 
 %: %.o
 	
 %.o: ${SRC_DIR}%.c
-	${CC} -c ${CC_FLAGS} ${HEADERS} $< -o ${OBJ_DIR}$@
+	@${CC} -c ${CC_FLAGS} ${HEADERS} $< -o ${OBJ_DIR}$@
 
-runtest: build
-	${OUT_DIR}${TEST_NAME}
+run: build
+	@${OUT_DIR}${TEST_NAME}
 
 memcheck: build
-	@valgrind --leak-check=full --show-leak-kinds=all --log-file=../out/memcheck.log ${OUT_DIR}${TEST_NAME}
-	@echo "\n"
-	@grep --color=always "ERROR SUMMARY:" ../out/memcheck.log
-	@echo ---------------------------------------------------------------
-	@tail ../out/memcheck.log
-	@echo "\n\n"
+	valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1 --log-file=/tmp/ctl-memcheck.log ${OUT_DIR}${TEST_NAME} || \
+	(grep "ERROR SUMMARY:" /tmp/ctl-memcheck.log; exit 1;)
 
 clean:
 	@rm $(OBJ_DIR)* $(OUT_DIR)* *.o 2>/dev/null || true

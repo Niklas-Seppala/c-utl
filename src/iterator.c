@@ -40,10 +40,12 @@ inline ssize_t CTLIteratorRemovedCurrent(CTLIterator iter) {
 }
 
 const void *CTLIteratorNext(CTLIterator iterator) {
-    CTLIterable n = iterator->node;
+    NOT_NULL(iterator);
+    NOT_NULL(iterator->node);
+    CTLIterable currentNode = iterator->node;
     iterator->node = (void *)iterator->node->next;
     iterator->index++;
-    return n->value;
+    return currentNode->value;
 }
 inline bool CTLIteratorHasNext(CTLIterator iterator) {
     return iterator->node != NULL;

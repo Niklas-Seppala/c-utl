@@ -59,7 +59,10 @@ valgrind: build
 	valgrind --leak-check=full ${OUT_DIR}${EXE_NAME}
 
 unit-test:
-	@make runtest -C ./test
+	@make run -C ./test
+
+compile-unit-test:
+	@make build -C ./test
 
 memcheck-test:
 	@make memcheck -C ./test

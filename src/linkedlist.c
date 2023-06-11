@@ -1,8 +1,10 @@
 #include "ctl/linkedlist.h"
 #include "ctl/error.h"
 #include "ctl.h"
+#include <stdarg.h>
 
 #define EMPTY 0
+#define INVALID -1
 
 struct __CTLLinkedListNode {
     struct __CTLLinkedListNode *next;
@@ -100,6 +102,26 @@ bool CTLLinkedListIsEmpty(CTLLinkedList list) {
     return list->size == EMPTY;
 }
 
+
+const void *CTLLinkedListGet(CTLLinkedList list, size_t atIndex) {
+    NOT_NULL(list);
+    size_t slot = EMPTY;
+
+    if (CTLLinkedListIsEmpty(list)) {
+        return NULL;
+    }
+
+    struct __CTLLinkedListNode *head = list->head;
+    while (head != NULL) {
+        if ((slot++ == atIndex)) {
+            const void *entry = head->entry;
+            return entry;
+        }
+        head = head->next;
+    }
+    return NULL;
+}
+
 const void *CTLLinkedListRemoveAt(CTLLinkedList list, size_t atIndex) {
     NOT_NULL(list);
     size_t slot = EMPTY;
@@ -122,8 +144,9 @@ const void *CTLLinkedListRemoveAt(CTLLinkedList list, size_t atIndex) {
     return NULL;
 }
 
-size_t CTLLinkedListInsert(CTLLinkedList list, const void *entry, size_t atIndex) {
+size_t CTLLinkedListInsertAt(CTLLinkedList list, const void *entry, size_t atIndex) {
     NOT_NULL(list);
+
     size_t slot = EMPTY;
     struct __CTLLinkedListNode *node = __CTLAllocateEntryNode(entry);
 
@@ -135,12 +158,24 @@ size_t CTLLinkedListInsert(CTLLinkedList list, const void *entry, size_t atIndex
     }
 
     struct __CTLLinkedListNode *head = list->head;
+    struct __CTLLinkedListNode *prev = NULL;
     while (head != NULL) {
-        if ((slot++ == atIndex)) {
-            __CTLAttachTo(head, node);
+        if ((slot == atIndex)) {
+            if (prev == NULL) {
+                node->next = list->head;
+                list->head = node;
+            } else {
+                __CTLAttachTo(head, node);
+            }
+            list->size++;
+            return slot;
         }
+        prev = head;
         head = head->next;
+        slot++;
     }
+
+    __CTLAttachTo(prev, node);
     list->size++;
     return slot;
 }
@@ -167,6 +202,17 @@ void CTLLinkedListAdd(CTLLinkedList list, const void *entry) {
     }
 
     list->size++;
+}
+
+
+void CTLLinkedListAddAll(CTLLinkedList list, size_t count, ...) {
+    NOT_NULL(list);
+    va_list args;
+    va_start(args, count);
+    for (size_t i = 0; i < count; i++) {
+        CTLLinkedListAdd(list, va_arg(args, void *));
+    }
+    va_end(args);
 }
 
 void CTLLinkedListAddFirst(CTLLinkedList list, const void *entry) {
@@ -242,7 +288,6 @@ const void *CTLLinkedListGetLast(CTLLinkedList list) {
 
 const void *CTLLinkedListFind(CTLLinkedList list, const void *entry, CTLCompareFunction compareFunction) {
     NOT_NULL(list);
-    NOT_NULL(entry);
     NOT_NULL(compareFunction);
     if (CTLLinkedListIsEmpty(list)) {
         return NULL;
@@ -261,6 +306,7 @@ CTLLinkedList CTLLinkedListReverse(CTLLinkedList list) {
     NOT_NULL(list);
     struct __CTLLinkedListNode *prev = NULL;
     struct __CTLLinkedListNode *head = list->head;
+    struct __CTLLinkedListNode *newTail = head;
     struct __CTLLinkedListNode *next = NULL;
     while (head != NULL) {
         next = head->next;
@@ -269,6 +315,7 @@ CTLLinkedList CTLLinkedListReverse(CTLLinkedList list) {
         head = next;
     }
     list->head = prev;
+    list->tail = newTail;
     return list;
 }
 

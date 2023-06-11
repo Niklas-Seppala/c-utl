@@ -67,12 +67,8 @@ int main(void)
     total = srunner_ntests_run(runner);
     srunner_free(runner);
 
-    
-
-    const int success = fail_count == 0;
-    const char *DIVIDER = success ? SUCCESS_DIVIDER : FAILURE_DIVIDER;
     asd(fail_count, total);
 
     CTLLogTeardown();
-    return (fail_count == 0) ? EXIT_SUCCESS : EXIT_FAILURE;  
+    return (fail_count == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

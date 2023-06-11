@@ -11,7 +11,7 @@ typedef struct house {
     char *name;
 } House;
 
-bool compareHousesByRooms(const void *a) {
+bool houseByName(const void *a) {
     if (a == NULL) return false;
     const House *aHouse = (House *)a;
     return CTLCompareString(aHouse->name, "House 2") == EQ;
@@ -25,71 +25,78 @@ const char *houseToString(const void *house) {
     return aHouse->name;
 }
 
+
+static const char *item1 = "item1";
+static const char *item2 = "item2";
+static const char *item3 = "item3";
+static const char *item4 = "item4";
+
 int main() {
 
-    CTLLogSetup();
-    CTLLogPrintf(CTL_TRACE, "%s", "this is trace");
-    CTLLogPrintf(CTL_TEST, "%s", "this is test");
-    CTLLogPrintf(CTL_DEBUG, "%s", "this is debug");
-    CTLLogPrintf(CTL_INFO, "%s", "this is info");
-    CTLLogPrintf(CTL_WARN, "%s", "this is warning");
-    CTLLogPrintf(CTL_ERROR, "%s", "this is error");
-    CTLLogPrintf(CTL_FATAL, "%s", "this is fatal error");
 
-    CTLLogTeardown();
+    // CTLLogSetup();
+    // CTLLogPrintf(CTL_TRACE, "%s", "this is trace");
+    // CTLLogPrintf(CTL_TEST, "%s", "this is test");
+    // CTLLogPrintf(CTL_DEBUG, "%s", "this is debug");
+    // CTLLogPrintf(CTL_INFO, "%s", "this is info");
+    // CTLLogPrintf(CTL_WARN, "%s", "this is warning");
+    // CTLLogPrintf(CTL_ERROR, "%s", "this is error");
+    // CTLLogPrintf(CTL_FATAL, "%s", "this is fatal error");
 
-    const char *key1 = "key";
-    const char *key2 = "key22";
-    const char *value1 = "value1";
-    const char *value2 = "value2";
+    // CTLLogTeardown();
 
-    CTLHashMap map = CTLHashMapCreate(1, 0.75f, CTLHashSDBM_STRING, CTLCompareStringKey);
+    // const char *key1 = "key";
+    // const char *key2 = "key22";
+    // const char *value1 = "value1";
+    // const char *value2 = "value2";
 
-    uint64_t h1 = CTLHashSDBM_STRING(key1, 0);
-    uint64_t h2 = CTLHashSDBM_STRING(key2, 0);
-    printf("h1 %ld\n", h1 % 16);
-    printf("h1 %ld\n", h2 % 16);
+    // CTLHashMap map = CTLHashMapCreate(1, 0.75f, CTLHashSDBM_STRING, CTLCompareStringKey);
 
-    CTLHashMapPut(map, key1, 0, value1);
-    CTLHashMapDebugPrint(map);
-    CTLHashMapPutIfAbsent(map, key2, 0, value2);
-    CTLHashMapDebugPrint(map);
+    // uint64_t h1 = CTLHashSDBM_STRING(key1, 0);
+    // uint64_t h2 = CTLHashSDBM_STRING(key2, 0);
+    // printf("h1 %ld\n", h1 % 16);
+    // printf("h1 %ld\n", h2 % 16);
 
-    printf("value1:  %s\n", (const char *)CTLHashMapGet(map, key1, 0));
-    printf("value2:  %s\n", (const char *)CTLHashMapGet(map, key2, 0));
+    // CTLHashMapPut(map, key1, 0, value1);
+    // CTLHashMapDebugPrint(map);
+    // CTLHashMapPutIfAbsent(map, key2, 0, value2);
+    // CTLHashMapDebugPrint(map);
 
-    const char *rp = "replacedValue";
-    bool wasReplaced = CTLHashMapReplace(map, key1, 0, rp);
-    printf("was replaced: %s\n", wasReplaced ? "true" : "false");
-    printf("value1:  %s\n", (const char *)CTLHashMapGet(map, key1, 0));
+    // printf("value1:  %s\n", (const char *)CTLHashMapGet(map, key1, 0));
+    // printf("value2:  %s\n", (const char *)CTLHashMapGet(map, key2, 0));
 
-    CTLLinkedList keys = CTLHashMapAllocateKeyList(map);
-    CTLIterator keyIterator = CTLLinkedListIterator(keys);
-    while (CTLIteratorHasNext(keyIterator)) {
-        const char *key = CTLIteratorNext(keyIterator);
-        printf("Key: %s\n", key);
-    }
+    // const char *rp = "replacedValue";
+    // bool wasReplaced = CTLHashMapReplace(map, key1, 0, rp);
+    // printf("was replaced: %s\n", wasReplaced ? "true" : "false");
+    // printf("value1:  %s\n", (const char *)CTLHashMapGet(map, key1, 0));
 
-    printf("reset iter\n");
-    CTLLinkedListIteratorReset(keys);
-    while (CTLIteratorHasNext(keyIterator)) {
-        const char *key = CTLIteratorNext(keyIterator);
-        ssize_t index = CTLIteratorGetIndex(keyIterator);
-        CTLLinkedListRemoveAt(keys, index);
-        CTLIteratorRemovedCurrent(keyIterator);
-        printf("Key: %s\n", key);
-    }
+    // CTLLinkedList keys = CTLHashMapAllocateKeyList(map);
+    // CTLIterator keyIterator = CTLLinkedListIterator(keys);
+    // while (CTLIteratorHasNext(keyIterator)) {
+    //     const char *key = CTLIteratorNext(keyIterator);
+    //     printf("Key: %s\n", key);
+    // }
 
-    printf("remove iter values\n");
-    CTLLinkedListIteratorReset(keys);
-    CTLLinkedListDebugPrint(keys);
+    // printf("reset iter\n");
+    // CTLLinkedListIteratorReset(keys);
+    // while (CTLIteratorHasNext(keyIterator)) {
+    //     const char *key = CTLIteratorNext(keyIterator);
+    //     ssize_t index = CTLIteratorGetIndex(keyIterator);
+    //     CTLLinkedListRemoveAt(keys, index);
+    //     CTLIteratorRemovedCurrent(keyIterator);
+    //     printf("Key: %s\n", key);
+    // }
 
-    CTLLinkedListFree(&keys);
+    // printf("remove iter values\n");
+    // CTLLinkedListIteratorReset(keys);
+    // CTLLinkedListDebugPrint(keys);
 
-    CTLHashMapClear(map);
-    CTLHashMapDebugPrint(map);
+    // CTLLinkedListFree(&keys);
 
-    CTLHashMapFree(map);
+    // CTLHashMapClear(map);
+    // CTLHashMapDebugPrint(map);
+
+    // CTLHashMapFree(map);
 
 
     // const char *str1 = "Matti";
