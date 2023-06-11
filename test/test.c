@@ -68,7 +68,7 @@ int main(void)
     Suite *suite = suite_create(name);
     test_linked_list_load_cases(suite);
     SRunner *runner = srunner_create(suite);
-    srunner_run_all(runner, CK_VERBOSE);
+    srunner_run_all(runner, CK_NORMAL);
     fail_count = srunner_ntests_failed(runner);
     total = srunner_ntests_run(runner);
     srunner_free(runner);
@@ -77,7 +77,7 @@ int main(void)
     Suite *suite2 = suite_create(name2);
     loadHashMapTestCases(suite2);
     SRunner *runner2 = srunner_create(suite2);
-    srunner_run_all(runner2, CK_VERBOSE);
+    srunner_run_all(runner2, CK_NORMAL);
     int fail_count2 = srunner_ntests_failed(runner2);
     int total2 = srunner_ntests_run(runner2);
     srunner_free(runner2);
@@ -86,5 +86,5 @@ int main(void)
     asd(name2, fail_count2, total2);
 
     CTLLogTeardown();
-    return (fail_count == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return (fail_count + fail_count2 == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

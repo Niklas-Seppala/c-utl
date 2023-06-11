@@ -60,4 +60,4 @@ compile-unit-test:
 	@make build -C ./test
 
 memcheck-test: directories
-	@make memcheck -C ./test
+	@make run MEMCHECK=-fsanitize=address S_LIBSAN=-static-libasan -C ./test
