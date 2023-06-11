@@ -26,9 +26,10 @@ COMPLETE_PRINT=\033[1;32mSuccess \033[0m
 suite:
 	@${CC} -c ${CC_FLAGS} ${HEADERS} testlinkedlist.c -o ${OBJ_DIR}testlinkedlist.o
 	@${CC} -c ${CC_FLAGS} ${HEADERS} test.c -o ${OBJ_DIR}test.o
+	@${CC} -c ${CC_FLAGS} ${HEADERS} testhashmap.c -o ${OBJ_DIR}testhashmap.o
 
 build: suite ${BINS}
-	@${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
+	@${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${OBJ_DIR}testhashmap.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
 
 %: %.o
 	
@@ -39,8 +40,7 @@ run: build
 	@${OUT_DIR}${TEST_NAME}
 
 memcheck: build
-	valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1 --log-file=/tmp/ctl-memcheck.log ${OUT_DIR}${TEST_NAME} || \
-	(grep "ERROR SUMMARY:" /tmp/ctl-memcheck.log; exit 1;)
+	valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1 --log-file=/tmp/ctl-memcheck.log ${OUT_DIR}${TEST_NAME}
 
 clean:
 	@rm $(OBJ_DIR)* $(OUT_DIR)* *.o 2>/dev/null || true

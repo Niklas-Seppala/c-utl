@@ -47,9 +47,11 @@ CTLHashMap CTLHashMapCreate(const int initialSize, float loadFactor, CTLHashFunc
     return map;
 }
 
-void CTLHashMapFree(CTLHashMap map) {
-    free(map->hashContainer);
-    free(map);
+void CTLHashMapFree(CTLHashMap *map) {
+    CTLHashMapClear(*map);
+    free((*map)->hashContainer);
+    free((*map));
+    *map = NULL;
 }
 
 #ifdef DEBUG

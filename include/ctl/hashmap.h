@@ -14,7 +14,7 @@ void CTLHashMapDebugPrint(CTLHashMap map);
 int CTLCompareStringKey(const void *aEntry, const void *bEntry);
 
 CTLHashMap CTLHashMapCreate(const int initialSize, float loadFactor, CTLHashFunction hashFunction, CTLCompareFunction keyCompareFunction);
-void CTLHashMapFree(CTLHashMap map);
+void CTLHashMapFree(CTLHashMap *map);
 
 int CTLHashMapSize(CTLHashMap map);
 
