@@ -64,5 +64,5 @@ unit-test:
 compile-unit-test:
 	@make build -C ./test
 
-memcheck-test:
+memcheck-test: directories
 	@make memcheck -C ./test
