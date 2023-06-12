@@ -5,6 +5,7 @@
 #include "ctl/iterator.h"
 
 typedef struct __CTLLinkedList *CTLLinkedList;
+typedef void (*CTLListEntryConsumer)(const void *entry);
 
 #ifdef DEBUG
 void CTLLinkedListDebugPrint(CTLLinkedList list);
@@ -183,6 +184,14 @@ int64_t CTLLinkedListIndexOf(CTLLinkedList list, const void *entry, CTLCompareFu
  * @return CTLLinkedList 
  */
 CTLLinkedList CTLLinkedListCopy(CTLLinkedList list);
+
+/**
+ * @brief 
+ * 
+ * @param list 
+ * @param enntryConsumer 
+ */
+void CTLLinkedListForEach(CTLLinkedList list, CTLListEntryConsumer enntryConsumer);
 
 /**
  * @brief 

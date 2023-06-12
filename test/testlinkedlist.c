@@ -476,6 +476,21 @@ START_TEST(testLinkedListIterator) {
 }
 END_TEST
 
+static void checkEntry(const void *entry) {
+    ck_assert_ptr_nonnull(entry);
+    printf("%s\n", (char *)entry);
+}
+
+START_TEST(testLinkedListForEach) {
+    CTLLinkedList list = CTLLinkedListCreate();
+    CTLLinkedListAddAll(list, 4, item1, item2, item3, item4);
+    ck_assert_int_eq(4, CTLLinkedListSize(list));
+
+    CTLLinkedListForEach(list, checkEntry);
+    CTLLinkedListFree(&list);
+}
+END_TEST
+
 
 void test_linked_list_load_cases(Suite *suite) {
     test_add_case(suite, test_linked_list_alloc);
@@ -499,4 +514,5 @@ void test_linked_list_load_cases(Suite *suite) {
     test_add_case(suite, testLinkedListIndexOf);
     test_add_case(suite, testLinkedListCopy);
     test_add_case(suite, testLinkedListIterator);
+    test_add_case(suite, testLinkedListForEach);
 }

@@ -368,6 +368,16 @@ bool CTLLinkedListContains(CTLLinkedList list, const void *entry, CTLCompareFunc
     return false;
 }
 
+void CTLLinkedListForEach(CTLLinkedList list, CTLListEntryConsumer entryConsumer) {
+    NOT_NULL(list);
+    NOT_NULL(entryConsumer);
+    struct __CTLLinkedListNode *node = list->head;
+    while (node != NULL) {
+        entryConsumer(node->entry);
+        node = node->next;
+    }
+}
+
 static inline void __CTLUnlinkAndFreeNode(CTLLinkedList list, struct __CTLLinkedListNode **node, struct __CTLLinkedListNode *prev) {
     NOT_NULL(list);
     NOT_NULL(node);
