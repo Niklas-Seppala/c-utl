@@ -4,6 +4,7 @@
 #include "stdbool.h"
 #include "stdint.h"
 #include "stdlib.h"
+#include "ctl/error.h"
 #include "ctl/terminal.h"
 
 

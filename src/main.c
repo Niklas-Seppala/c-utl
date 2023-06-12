@@ -5,6 +5,7 @@
 #include "ctl/linkedlist.h"
 #include "ctl.h"
 #include "ctl/io/logger.h"
+#include "assert.h"
 
 typedef struct house {
     int rooms;
@@ -26,14 +27,8 @@ const char *houseToString(const void *house) {
 }
 
 
-static const char *item1 = "item1";
-static const char *item2 = "item2";
-static const char *item3 = "item3";
-static const char *item4 = "item4";
-
 int main() {
-
-
+   
     // CTLLogSetup();
     // CTLLogPrintf(CTL_TRACE, "%s", "this is trace");
     // CTLLogPrintf(CTL_TEST, "%s", "this is test");

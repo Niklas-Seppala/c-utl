@@ -3,6 +3,9 @@
 
 uint64_t CTLHashDJB2_STRING(const void *key, const size_t len) {
     UNUSED_PARAMETER(len);
+    if (key == NULL) {
+        return 0;
+    }
     const uint8_t *str = key;
     uint64_t hash = 5381;
     int c;
@@ -13,6 +16,9 @@ uint64_t CTLHashDJB2_STRING(const void *key, const size_t len) {
 }
 
 uint64_t CTLHashFNV(const void *key, const size_t len) {
+    if (key == NULL) {
+        return 0;
+    }
     const uint8_t *p = key;
     uint64_t h = 0xcbf29ce484222325;
     for (size_t i = 0; i < len; i++)
@@ -23,6 +29,9 @@ uint64_t CTLHashFNV(const void *key, const size_t len) {
 
 uint64_t CTLHashSDBM_STRING(const void *key, const size_t len) {
     UNUSED_PARAMETER(len);
+    if (key == NULL) {
+        return 0;
+    }
     const uint8_t *str = key;
     uint64_t hash = 0;
     int c;

@@ -71,7 +71,9 @@ void CTLLinkedListFree(CTLLinkedList *list) {
         free(head);
         head = next;
     }
-    free((void *)(*list)->iter);
+    if ((*list)->iter) {
+        free((void *)(*list)->iter);
+    }
     free((void *)*list);
     *list = NULL;
 }
@@ -184,8 +186,10 @@ void CTLLinkedListIteratorReset(CTLLinkedList list) {
     CTLIteratorResetHead(list->iter, (CTLIterable)list->head);
 }
 
-inline CTLIterator CTLLinkedListIterator(CTLLinkedList list) {
-    list->iter = CTLIteratorAllocateNodeIterator((CTLIterable)list->head);
+inline CTLIterator CTLLinkedListIterator(CTLLinkedList list) { // TODO: ????
+    if (list->iter == NULL) {
+        list->iter = CTLIteratorAllocateNodeIterator((CTLIterable)list->head);
+    }
     return list->iter;
 }
 
