@@ -1,4 +1,5 @@
 #include "testlinkedlist.h"
+
 #include "ctl/linkedlist.h"
 #include "test.h"
 
@@ -202,7 +203,6 @@ START_TEST(testLinkedListGet) {
 }
 END_TEST
 
-
 START_TEST(testLinkedListRemoveAt) {
     CTLLinkedList list = CTLLinkedListCreate();
     char *removedItem = NULL;
@@ -232,6 +232,52 @@ START_TEST(testLinkedListRemoveAt) {
 
     removedItem = (void *)CTLLinkedListRemoveAt(list, 0);
     ck_assert_ptr_eq(NULL, removedItem);
+    ck_assert_int_eq(0, CTLLinkedListSize(list));
+
+    CTLLinkedListFree(&list);
+}
+END_TEST
+
+START_TEST(testLinkedListRemoveLast) {
+    CTLLinkedList list = CTLLinkedListCreate();
+
+    CTLLinkedListAddAll(list, 4, item1, item2, item3, item4);
+    ck_assert_int_eq(4, CTLLinkedListSize(list));
+
+    void *tail = (void *)CTLLinkedListRemoveLast(list);
+    ck_assert_ptr_eq(item4, tail);
+    ck_assert_int_eq(3, CTLLinkedListSize(list));
+    tail = (void *)CTLLinkedListRemoveLast(list);
+    ck_assert_ptr_eq(item3, tail);
+    ck_assert_int_eq(2, CTLLinkedListSize(list));
+    tail = (void *)CTLLinkedListRemoveLast(list);
+    ck_assert_ptr_eq(item2, tail);
+    ck_assert_int_eq(1, CTLLinkedListSize(list));
+    tail = (void *)CTLLinkedListRemoveLast(list);
+    ck_assert_ptr_eq(item1, tail);
+    ck_assert_int_eq(0, CTLLinkedListSize(list));
+
+    CTLLinkedListFree(&list);
+}
+END_TEST
+
+START_TEST(testLinkedListRemoveFirst) {
+    CTLLinkedList list = CTLLinkedListCreate();
+
+    CTLLinkedListAddAll(list, 4, item1, item2, item3, item4);
+    ck_assert_int_eq(4, CTLLinkedListSize(list));
+
+    void *tail = (void *)CTLLinkedListRemoveFirst(list);
+    ck_assert_ptr_eq(item1, tail);
+    ck_assert_int_eq(3, CTLLinkedListSize(list));
+    tail = (void *)CTLLinkedListRemoveFirst(list);
+    ck_assert_ptr_eq(item2, tail);
+    ck_assert_int_eq(2, CTLLinkedListSize(list));
+    tail = (void *)CTLLinkedListRemoveFirst(list);
+    ck_assert_ptr_eq(item3, tail);
+    ck_assert_int_eq(1, CTLLinkedListSize(list));
+    tail = (void *)CTLLinkedListRemoveFirst(list);
+    ck_assert_ptr_eq(item4, tail);
     ck_assert_int_eq(0, CTLLinkedListSize(list));
 
     CTLLinkedListFree(&list);
@@ -329,7 +375,7 @@ START_TEST(testLinkedListRemove) {
 
     removed = (void *)CTLLinkedListRemove(list, item1, CTLCompareString);
     ck_assert_ptr_null(removed);
-    
+
     CTLLinkedListAddAll(list, 2, item1, item2);
     ck_assert_int_eq(2, CTLLinkedListSize(list));
 
@@ -398,7 +444,6 @@ START_TEST(testLinkedListContains) {
 }
 END_TEST
 
-
 START_TEST(testLinkedListIndexOf) {
     const char *missingEntry = "missing";
     CTLLinkedList list = CTLLinkedListCreate();
@@ -412,8 +457,9 @@ START_TEST(testLinkedListIndexOf) {
     ck_assert_int_eq(2, CTLLinkedListIndexOf(list, item3, CTLCompareString));
     ck_assert_int_eq(3, CTLLinkedListIndexOf(list, item4, CTLCompareString));
 
-    ck_assert_int_eq(-1, CTLLinkedListIndexOf(list, missingEntry, CTLCompareString));
-    
+    ck_assert_int_eq(
+        -1, CTLLinkedListIndexOf(list, missingEntry, CTLCompareString));
+
     CTLLinkedListFree(&list);
 }
 END_TEST
@@ -491,7 +537,6 @@ START_TEST(testLinkedListForEach) {
 }
 END_TEST
 
-
 void test_linked_list_load_cases(Suite *suite) {
     test_add_case(suite, test_linked_list_alloc);
     test_add_case(suite, test_linked_list_free);
@@ -515,4 +560,6 @@ void test_linked_list_load_cases(Suite *suite) {
     test_add_case(suite, testLinkedListCopy);
     test_add_case(suite, testLinkedListIterator);
     test_add_case(suite, testLinkedListForEach);
+    test_add_case(suite, testLinkedListRemoveLast);
+    test_add_case(suite, testLinkedListRemoveFirst);
 }

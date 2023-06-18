@@ -6,6 +6,7 @@
 // ----------------------------------------------
 //              Sort functions
 // ----------------------------------------------
-void CTLMergeSort(void *array, size_t arraySize, size_t entrySizeInBytes, CTLCompareFunction cmpFunction);
+void CTLMergeSort(void *array, size_t arraySize, size_t entrySizeInBytes,
+                  CTLCompareFunction cmpFunction);
 
 #endif  // CUTL_SORT_H

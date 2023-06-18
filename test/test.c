@@ -1,13 +1,14 @@
 #include "test.h"
-#include "testlinkedlist.h"
-#include "testhashmap.h"
+
 #include "ctl/io/logger.h"
+#include "testhashmap.h"
+#include "testlinkedlist.h"
+#include "testvector.h"
 
 #define SUCCESS_DIVIDER TERM_GRN "█" TERM_RSET
 #define FAILURE_DIVIDER TERM_RED "█" TERM_RSET
 
-Suite *test_add_case(Suite *suite, const TTest *tc)
-{
+Suite *test_add_case(Suite *suite, const TTest *tc) {
     TCase *tc_core = tcase_create("Core");
     tcase_add_test(tc_core, tc);
     suite_add_tcase(suite, tc_core);
@@ -15,7 +16,7 @@ Suite *test_add_case(Suite *suite, const TTest *tc)
 }
 
 void asd(const char *name, int fail, int total) {
-    int failPercent = (int) round(fail / (float)total * 100);
+    int failPercent = (int)round(fail / (float)total * 100);
     int successPercent = 100 - failPercent;
 
     int len = strlen(name);
@@ -30,18 +31,18 @@ void asd(const char *name, int fail, int total) {
         printf("%s %d ", FAILURE_DIVIDER FAILURE_DIVIDER, fail);
     }
     if (successPercent > 0) {
-        printf("%s %d ", SUCCESS_DIVIDER SUCCESS_DIVIDER, total-fail);
+        printf("%s %d ", SUCCESS_DIVIDER SUCCESS_DIVIDER, total - fail);
     }
     printf("\n");
-    
+
     if (failPercent > 0) {
         for (int i = 0; i < failPercent / 4; i++) {
             printf("%s", " ");
         }
         printf("%d%%", failPercent);
-    } 
+    }
     if (successPercent > 0) {
-        for (int i = 0; i < successPercent / 4 + failPercent / 4-3; i++) {
+        for (int i = 0; i < successPercent / 4 + failPercent / 4 - 3; i++) {
             printf("%s", " ");
         }
         printf("%d%%", successPercent);
@@ -58,8 +59,7 @@ void asd(const char *name, int fail, int total) {
     printf("--------------------------------------------------\n");
 }
 
-int main(void)
-{
+int main(void) {
     CTLLogSetup();
     int fail_count = 0;
     int total = 0;
@@ -82,11 +82,22 @@ int main(void)
     int total2 = srunner_ntests_run(runner2);
     srunner_free(runner2);
 
+    const char *name3 = "Vector";
+    Suite *suite3 = suite_create(name3);
+    loadVectorTestCases(suite3);
+    SRunner *runner3 = srunner_create(suite3);
+    srunner_run_all(runner3, CK_VERBOSE);
+    int fail_count3 = srunner_ntests_failed(runner3);
+    int total3 = srunner_ntests_run(runner3);
+    srunner_free(runner3);
+
     asd(name, fail_count, total);
     asd(name2, fail_count2, total2);
-    asd("All Tests", fail_count2 + fail_count, total + total2);
-    
+    asd(name3, fail_count3, total3);
+    asd("All Tests", fail_count2 + fail_count + fail_count3,
+        total + total2 + total3);
 
     CTLLogTeardown();
-    return (fail_count + fail_count2 == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return (fail_count + fail_count2 + fail_count3 == 0) ? EXIT_SUCCESS
+                                                         : EXIT_FAILURE;
 }

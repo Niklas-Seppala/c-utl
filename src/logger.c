@@ -1,9 +1,9 @@
+#include "ctl/io/logger.h"
+
 #include <stdarg.h>
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
-
-#include "ctl/io/logger.h"
 
 #define TIME_STR_LEN (72)
 #define MILLIS_STR_LEN 8
@@ -12,7 +12,7 @@
 // Determinel log file path.
 #ifndef LOG_FILE_PATH
 #define LOG_FILE_PATH "game.log"
-#endif // LOG_FILE_PATH
+#endif  // LOG_FILE_PATH
 
 // Is file read with terminal (include colors).
 #ifdef LOG_EXT_TERMINAL
@@ -23,8 +23,7 @@
 #else
 // Log with color to stdout.
 #define COLORS 1
-#endif // LOG_FILE
-
+#endif  // LOG_FILE
 
 #if COLORS
 #define PRETTY_INFO TERM_GRN "INFO" TERM_RSET

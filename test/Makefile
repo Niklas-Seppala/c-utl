@@ -14,7 +14,7 @@ DEBUG=-g -DDEBUG $(MEMCHECK)
 TEST=-lm -lcheck -lsubunit $(S_LIBSAN) $(MEMCHECK)
 
 CC_WARN=-Wall -Wshadow -Wextra -Wformat=2 -Wpedantic -fmax-errors=10 -Wno-unknown-pragmas
-CC_FLAGS=${CC_WARN} -O0 -std=gnu99 ${DEBUG} -DRT_NULL_CHECKS
+CC_FLAGS=${CC_WARN} -O0 -std=gnu99 ${DEBUG} -DRT_NULL_CHECKS -DRT_INDEX_BOUNDS_CHECKS
 PROJECT_NAME=ctl
 BUILD=0.0.1
 EXE_NAME=${PROJECT_NAME}-${BUILD}
@@ -31,9 +31,10 @@ suite:
 	@${CC} -c ${CC_FLAGS} ${HEADERS} testlinkedlist.c -o ${OBJ_DIR}testlinkedlist.o
 	@${CC} -c ${CC_FLAGS} ${HEADERS} test.c -o ${OBJ_DIR}test.o
 	@${CC} -c ${CC_FLAGS} ${HEADERS} testhashmap.c -o ${OBJ_DIR}testhashmap.o
+	@${CC} -c ${CC_FLAGS} ${HEADERS} testvector.c -o ${OBJ_DIR}testvector.o
 
 build: suite ${BINS}
-	@${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${OBJ_DIR}testhashmap.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
+	@${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${OBJ_DIR}testhashmap.o ${OBJ_DIR}testvector.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
 
 %: %.o
 	

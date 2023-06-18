@@ -51,7 +51,8 @@ bool CTLLinkedListIsEmpty(CTLLinkedList list);
  * @param cmp
  * @return const void*
  */
-const void *CTLLinkedListFind(CTLLinkedList list, const void *entry, CTLCompareFunction cmp);
+const void *CTLLinkedListFind(CTLLinkedList list, const void *entry,
+                              CTLCompareFunction cmp);
 
 /**
  * @brief
@@ -62,11 +63,11 @@ const void *CTLLinkedListFind(CTLLinkedList list, const void *entry, CTLCompareF
 void CTLLinkedListAdd(CTLLinkedList list, const void *entry);
 
 /**
- * @brief 
- * 
- * @param list 
- * @param count 
- * @param ... 
+ * @brief
+ *
+ * @param list
+ * @param count
+ * @param ...
  */
 void CTLLinkedListAddAll(CTLLinkedList list, size_t count, ...);
 
@@ -78,14 +79,15 @@ void CTLLinkedListAddAll(CTLLinkedList list, size_t count, ...);
  * @param atIndex
  * @return size_t
  */
-size_t CTLLinkedListInsertAt(CTLLinkedList list, const void *entry, size_t atIndex);
+size_t CTLLinkedListInsertAt(CTLLinkedList list, const void *entry,
+                             size_t atIndex);
 
 /**
- * @brief 
- * 
- * @param list 
- * @param atIndex 
- * @return const void* 
+ * @brief
+ *
+ * @param list
+ * @param atIndex
+ * @return const void*
  */
 const void *CTLLinkedListGet(CTLLinkedList list, size_t atIndex);
 
@@ -137,7 +139,28 @@ const void *CTLLinkedListGetLast(CTLLinkedList list);
  * @param compareFunction
  * @return const void*
  */
-const void *CTLLinkedListRemove(CTLLinkedList list, const void *entry, CTLCompareFunction compareFunction);
+const void *CTLLinkedListRemove(CTLLinkedList list, const void *entry,
+                                CTLCompareFunction compareFunction);
+
+/**
+ * @brief
+ *
+ * @param list
+ * @param entry
+ * @param compareFunction
+ * @return const void*
+ */
+const void *CTLLinkedListRemoveLast(CTLLinkedList list);
+
+/**
+ * @brief
+ *
+ * @param list
+ * @param entry
+ * @param compareFunction
+ * @return const void*
+ */
+const void *CTLLinkedListRemoveFirst(CTLLinkedList list);
 
 /**
  * @brief
@@ -157,55 +180,66 @@ CTLLinkedList CTLLinkedListFilter(CTLLinkedList list, CTLpredicate filter);
 CTLLinkedList CTLLinkedListReverse(CTLLinkedList list);
 
 /**
- * @brief 
- * 
- * @param list 
- * @param entry 
- * @param comnpareFunction 
- * @return true 
- * @return false 
+ * @brief
+ *
+ * @param list
+ * @param entry
+ * @param comnpareFunction
+ * @return true
+ * @return false
  */
-bool CTLLinkedListContains(CTLLinkedList list, const void *entry, CTLCompareFunction comnpareFunction);
+bool CTLLinkedListContains(CTLLinkedList list, const void *entry,
+                           CTLCompareFunction comnpareFunction);
 
 /**
- * @brief 
- * 
- * @param list 
- * @param entry 
- * @param compareFuntion 
- * @return int64_t 
+ * @brief
+ *
+ * @param list
+ * @param entry
+ * @param compareFuntion
+ * @return int64_t
  */
-int64_t CTLLinkedListIndexOf(CTLLinkedList list, const void *entry, CTLCompareFunction compareFuntion);
+int64_t CTLLinkedListIndexOf(CTLLinkedList list, const void *entry,
+                             CTLCompareFunction compareFuntion);
 
 /**
- * @brief 
- * 
- * @param list 
- * @return CTLLinkedList 
+ * @brief
+ *
+ * @param list
+ * @return CTLLinkedList
  */
 CTLLinkedList CTLLinkedListCopy(CTLLinkedList list);
 
 /**
- * @brief 
- * 
- * @param list 
- * @param enntryConsumer 
+ * @brief
+ *
+ * @param list
+ * @param enntryConsumer
  */
-void CTLLinkedListForEach(CTLLinkedList list, CTLListEntryConsumer enntryConsumer);
+void CTLLinkedListForEach(CTLLinkedList list,
+                          CTLListEntryConsumer enntryConsumer);
 
 /**
- * @brief 
- * 
- * @param list 
- * @return CTLIterator 
+ * @brief
+ *
+ * @param list
+ * @return CTLIterator
  */
 CTLIterator CTLLinkedListIterator(CTLLinkedList list);
 
 /**
- * @brief 
- * 
- * @param list 
+ * @brief
+ *
+ * @param list
  */
 void CTLLinkedListIteratorReset(CTLLinkedList list);
+
+/**
+ * @brief
+ *
+ * @param list
+ * @return CTLIterator
+ */
+CTLIterator CTLLinkedListIteratorAllocate(CTLLinkedList list);
 
 #endif  // CTL_LINKEDLIST_H

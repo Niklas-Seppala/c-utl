@@ -7,6 +7,4 @@ inline int roundToPow2(int n) {
     return result;
 }
 
-inline int greaterOf(int a, int b) {
-    return a >= b ? a : b;
-}
+inline int greaterOf(int a, int b) { return a >= b ? a : b; }

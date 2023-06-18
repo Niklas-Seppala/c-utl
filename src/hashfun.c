@@ -1,4 +1,5 @@
 #include "ctl/hashfun.h"
+
 #include "ctl.h"
 
 uint64_t CTLHashDJB2_STRING(const void *key, const size_t len) {
@@ -21,8 +22,7 @@ uint64_t CTLHashFNV(const void *key, const size_t len) {
     }
     const uint8_t *p = key;
     uint64_t h = 0xcbf29ce484222325;
-    for (size_t i = 0; i < len; i++)
-        h = (h ^ p[i]) * 0x100000001b3;
+    for (size_t i = 0; i < len; i++) h = (h ^ p[i]) * 0x100000001b3;
 
     return h;
 }

@@ -1,9 +1,14 @@
 #include "ctl/iterator.h"
+
 #include "ctl/error.h"
 
 struct iterableNode {
     const struct iterableNode *next;
     const void *value;
+};
+
+struct iterableSpan {
+    const void *array;
 };
 
 struct __CTLIterator {

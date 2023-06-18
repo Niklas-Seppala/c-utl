@@ -4,4 +4,4 @@
 
 void test_linked_list_load_cases(Suite *suite);
 
-#endif // CTL_TEST_LINKEDLIST_H
+#endif  // CTL_TEST_LINKEDLIST_H

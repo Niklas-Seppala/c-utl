@@ -7,8 +7,8 @@ SRC_DIR:=src/
 CC=gcc
 DEBUG=-g -DDEBUG
 MKDIR_P = mkdir -p
-RT_NULL_CHECKS=-DRT_NULL_CHECKS -DRT_NULL_KILLS -DCTL_MERGESORT_DYNAMIC_ALLOC
-CC_WARN=-Wall -Wshadow -Wextra -Wformat=2 -Wpedantic -fmax-errors=10 -Wno-unknown-pragmas
+RT_NULL_CHECKS=-DRT_NULL_CHECKS -DRT_NULL_KILLS -DCTL_MERGESORT_DYNAMIC_ALLOC -DRT_INDEX_BOUNDS_CHECKS
+CC_WARN=-Wall -Wshadow -Wextra -Wformat=2 -Wpedantic -fmax-errors=10 -Wno-unknown-pragmas 
 CC_FLAGS=${CC_WARN} -O0 -std=gnu99 ${DEBUG} ${RT_NULL_CHECKS}
 PROJECT_NAME=ctl
 BUILD=0.0.1
