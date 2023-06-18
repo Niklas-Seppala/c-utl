@@ -522,10 +522,7 @@ START_TEST(testLinkedListIterator) {
 }
 END_TEST
 
-static void checkEntry(const void *entry) {
-    ck_assert_ptr_nonnull(entry);
-    printf("%s\n", (char *)entry);
-}
+static void checkEntry(const void *entry) { ck_assert_ptr_nonnull(entry); }
 
 START_TEST(testLinkedListForEach) {
     CTLLinkedList list = CTLLinkedListCreate();

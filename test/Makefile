@@ -28,18 +28,18 @@ BINS := $(SRC:%.c=%)
 COMPLETE_PRINT=\033[1;32mSuccess \033[0m
 
 suite:
-	@${CC} -c ${CC_FLAGS} ${HEADERS} testlinkedlist.c -o ${OBJ_DIR}testlinkedlist.o
-	@${CC} -c ${CC_FLAGS} ${HEADERS} test.c -o ${OBJ_DIR}test.o
-	@${CC} -c ${CC_FLAGS} ${HEADERS} testhashmap.c -o ${OBJ_DIR}testhashmap.o
-	@${CC} -c ${CC_FLAGS} ${HEADERS} testvector.c -o ${OBJ_DIR}testvector.o
+	${CC} -c ${CC_FLAGS} ${HEADERS} testlinkedlist.c -o ${OBJ_DIR}testlinkedlist.o
+	${CC} -c ${CC_FLAGS} ${HEADERS} test.c -o ${OBJ_DIR}test.o
+	${CC} -c ${CC_FLAGS} ${HEADERS} testhashmap.c -o ${OBJ_DIR}testhashmap.o
+	${CC} -c ${CC_FLAGS} ${HEADERS} testvector.c -o ${OBJ_DIR}testvector.o
 
 build: suite ${BINS}
-	@${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${OBJ_DIR}testhashmap.o ${OBJ_DIR}testvector.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
+	${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${OBJ_DIR}testhashmap.o ${OBJ_DIR}testvector.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
 
 %: %.o
 	
 %.o: ${SRC_DIR}%.c
-	@${CC} -c ${CC_FLAGS} ${HEADERS} $< -o ${OBJ_DIR}$@
+	${CC} -c ${CC_FLAGS} ${HEADERS} $< -o ${OBJ_DIR}$@
 
 run: build
 	@${OUT_DIR}${TEST_NAME}

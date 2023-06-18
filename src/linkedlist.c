@@ -219,18 +219,19 @@ size_t CTLLinkedListInsertAt(CTLLinkedList list, const void *entry,
 }
 
 void CTLLinkedListIteratorReset(CTLLinkedList list) {
-    CTLIteratorResetHead(list->iter, (CTLIterable)list->head);
+    CTLIteratorResetHead(list->iter);
 }
 
 inline CTLIterator CTLLinkedListIterator(CTLLinkedList list) {  // TODO: ????
     if (list->iter == NULL) {
-        list->iter = CTLIteratorAllocateNodeIterator((CTLIterable)list->head);
+        list->iter =
+            CTLIteratorAllocateNodeIterator((CTLIterableNode)list->head);
     }
     return list->iter;
 }
 
 inline CTLIterator CTLLinkedListIteratorAllocate(CTLLinkedList list) {
-    return CTLIteratorAllocateNodeIterator((CTLIterable)list->head);
+    return CTLIteratorAllocateNodeIterator((CTLIterableNode)list->head);
 }
 
 void CTLLinkedListAdd(CTLLinkedList list, const void *entry) {

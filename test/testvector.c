@@ -181,6 +181,61 @@ START_TEST(testVectorClear) {
 }
 END_TEST
 
+START_TEST(testVectorIterator) {
+    CTLVector vec = getIntegerVector();
+    for (size_t i = 0; i < VALUES_LEN; i++) {
+        int *addr = intValues + i;
+        CTLVectorAdd(vec, addr);
+    }
+    ck_assert_int_eq(20, CTLVectorSize(vec));
+
+    CTLIterator iter = CTLVectorIterator(vec);
+    size_t index = 0;
+    while (CTLIteratorHasNext(iter)) {
+        ck_assert_int_eq(index, CTLIteratorGetIndex(iter));
+        const int value = *(int *)CTLIteratorNext(iter);
+        ck_assert_int_eq(intValues[index], value);
+        index++;
+    }
+
+    CTLIteratorFree(&iter);
+    CTLVectorFree(&vec);
+}
+END_TEST
+
+START_TEST(testVectorIteratorReset) {
+    CTLVector vec = getIntegerVector();
+
+    for (size_t i = 0; i < VALUES_LEN; i++) {
+        int *addr = intValues + i;
+        CTLVectorAdd(vec, addr);
+    }
+    ck_assert_int_eq(20, CTLVectorSize(vec));
+
+    CTLIterator iter = CTLVectorIterator(vec);
+
+    size_t index = 0;
+    while (CTLIteratorHasNext(iter)) {
+        ck_assert_int_eq(index, CTLIteratorGetIndex(iter));
+        const int value = *(int *)CTLIteratorNext(iter);
+        ck_assert_int_eq(intValues[index], value);
+        index++;
+    }
+    CTLIteratorResetHead(iter);
+
+    index = 0;
+    while (CTLIteratorHasNext(iter)) {
+        ck_assert_int_eq(index, CTLIteratorGetIndex(iter));
+        const int value = *(int *)CTLIteratorNext(iter);
+        ck_assert_int_eq(intValues[index], value);
+        index++;
+    }
+
+    CTLIteratorFree(&iter);
+    CTLVectorFree(&vec);
+}
+END_TEST
+
 void loadVectorTestCases(Suite *suite) {
     test_add_case(suite, testVectorCreate);
     test_add_case(suite, testVectorFree);
@@ -192,4 +247,6 @@ void loadVectorTestCases(Suite *suite) {
     test_add_case(suite, testVectorRemoveIf);
     test_add_case(suite, testVectorRetainIf);
     test_add_case(suite, testVectorClear);
+    test_add_case(suite, testVectorIterator);
+    test_add_case(suite, testVectorIteratorReset);
 }

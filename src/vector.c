@@ -207,9 +207,7 @@ bool CTLVectorRetainIf(CTLVector vec, CTLpredicate predicate) {
 inline void CTLVectorClear(CTLVector vec) { vec->size = 0; }
 
 CTLIterator CTLVectorIterator(CTLVector vec) {
-    UNUSED_PARAMETER(vec);
-    TODO("This is not yet implemented");
-    return NULL;
+    return CTLIteratorAllocateArrayIterator(vec->array, vec->size);
 }
 
 static void resize(struct vec *vec) {

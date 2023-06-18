@@ -2,19 +2,70 @@
 #define CTL_ITERATOR_H
 #include "ctl.h"
 
-typedef struct iterableNode *CTLIterable;
-// typedef struct iterableSpan *CTLIterable;
-typedef struct __CTLIterator *CTLIterator;
+typedef struct iterableNode *CTLIterableNode;
+typedef struct iterableArray *CTLIterableArray;
+typedef union __CTLIterator *CTLIterator;
 
-const void *CTLIteratorNext(CTLIterator iterator);
+/**
+ * @brief
+ *
+ * @param iterator
+ * @return void*
+ */
+void *CTLIteratorNext(CTLIterator iterator);
+
+/**
+ * @brief
+ *
+ * @param iterator
+ * @return true
+ * @return false
+ */
 bool CTLIteratorHasNext(CTLIterator iterator);
-CTLIterator CTLIteratorAllocateNodeIterator(CTLIterable firstNode);
 
-// CTLIterator CTLIteratorAllocateArrayIterator(CTLIterable array);
+/**
+ * @brief
+ *
+ * @param firstNode
+ * @return CTLIterator
+ */
+CTLIterator CTLIteratorAllocateNodeIterator(CTLIterableNode firstNode);
 
-void CTLIteratorFreeNodeIterator(CTLIterator *iterator);
+/**
+ * @brief
+ *
+ * @param array
+ * @param size
+ * @return CTLIterator
+ */
+CTLIterator CTLIteratorAllocateArrayIterator(void **array, size_t size);
+
+/**
+ * @brief
+ *
+ * @param iterator
+ */
+void CTLIteratorFree(CTLIterator *iterator);
+
+/**
+ * @brief
+ *
+ * @param iterator
+ * @return ssize_t
+ */
 ssize_t CTLIteratorGetIndex(CTLIterator iterator);
-ssize_t CTLIteratorRemovedCurrent(CTLIterator iter);
-void CTLIteratorResetHead(CTLIterator iterator, CTLIterable iterable);
 
+/**
+ * @brief
+ *
+ * @param indexDelta
+ */
+void CTLIteratorUnderlyingChanged(CTLIterator, size_t indexDelta);
+
+/**
+ * @brief
+ *
+ * @param iterator
+ */
+void CTLIteratorResetHead(CTLIterator iterator);
 #endif  // CTL_ITERATOR_H
