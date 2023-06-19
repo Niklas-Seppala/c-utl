@@ -6,19 +6,12 @@
 
 #define DEFAULT_CAPACITY 10
 
-struct vec {
-    size_t capacity;
-    size_t size;
-    void **array;
-    CTLCompareFunction entryComaparer;
-};
-
 /**
  * @brief
  *
  * @param vec
  */
-static void resize(struct vec *vec);
+static void resize(struct vector *vec);
 
 /**
  * @brief Get the Remaining Count Exclusive object
@@ -27,7 +20,7 @@ static void resize(struct vec *vec);
  * @param index
  * @return size_t
  */
-static size_t getRemainingCountExclusive(struct vec *vec, size_t index);
+static size_t getRemainingCountExclusive(struct vector *vec, size_t index);
 /**
  * @brief Get the Remaining Count Inclusive object
  *
@@ -35,22 +28,36 @@ static size_t getRemainingCountExclusive(struct vec *vec, size_t index);
  * @param index
  * @return size_t
  */
-static size_t getRemainingCountInclusive(struct vec *vec, size_t index);
+static size_t getRemainingCountInclusive(struct vector *vec, size_t index);
 
-CTLVector CTLVectorCreate(CTLCompareFunction entryComprare,
-                          size_t startCapacity) {
-    NOT_NULL(entryComprare);
-    CTLVector vec = calloc(sizeof(struct vec), 1);
+/**
+ * @brief
+ *
+ * @param stackVector
+ * @param entryComparer
+ * @param startCapacity
+ * @return CTLVector
+ */
+static CTLVector initVector(CTLVector stackVector,
+                            CTLCompareFunction entryComparer,
+                            size_t startCapacity);
 
-    if (startCapacity <= 0) {
-        startCapacity = DEFAULT_CAPACITY;
-    }
+// -------------------------------------------------- //
+// Public API implementations
+// -------------------------------------------------- //
 
-    vec->array = calloc(sizeof(void **), startCapacity);
-    vec->capacity = startCapacity;
-    vec->entryComaparer = entryComprare;
-    vec->size = 0;
-    return vec;
+CTLVector CTLVectorStackAlloc(CTLVector stackVector,
+                              CTLCompareFunction entryComparer,
+                              size_t startCapacity) {
+    NOT_NULL(stackVector);
+    return initVector(stackVector, entryComparer, startCapacity);
+}
+
+CTLVector CTLVectorHeapAlloc(CTLCompareFunction entryComparer,
+                             size_t startCapacity) {
+    NOT_NULL(entryComparer);
+    CTLVector vec = calloc(sizeof(struct vector), 1);
+    return initVector(vec, entryComparer, startCapacity);
 }
 
 void CTLVectorFree(CTLVector *vec) {
@@ -174,6 +181,45 @@ bool CTLVectorRemoveAll(CTLVector vec, CTLIterator values) {
     return result;
 }
 
+void CTLVectorRemoveRange(CTLVector vec, size_t start, size_t end) {
+    NOT_NULL(vec);
+    INDEX_IN_UPPER_BOUND(start, vec->size + 1);
+    INDEX_IN_UPPER_BOUND(start, end + 1);
+    INDEX_IN_UPPER_BOUND(end, vec->size + 1);
+
+    size_t count = end - start;
+    for (size_t i = 0; i < count; i++) {
+        CTLVectorRemoveAt(vec, start);
+    }
+}
+
+bool CTLVectorRetainAll(CTLVector vec, CTLIterator values) {
+    NOT_NULL(vec);
+    NOT_NULL(values);
+
+    bool result = false;
+
+    for (size_t i = 0; i < vec->size; i++) {
+        void *element = vec->array[i];
+        bool found = false;
+        while (CTLIteratorHasNext(values)) {
+            if (vec->entryComaparer(CTLIteratorNext(values), element) == EQ) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            result = true;
+            CTLVectorRemoveAt(vec, i);
+            i--;
+        }
+        // Reuse the same iterator.
+        CTLIteratorResetHead(values);
+    }
+
+    return result;
+}
+
 bool CTLVectorRemoveIf(CTLVector vec, CTLpredicate predicate) {
     NOT_NULL(vec);
     NOT_NULL(predicate);
@@ -210,15 +256,30 @@ CTLIterator CTLVectorIterator(CTLVector vec) {
     return CTLIteratorAllocateArrayIterator(vec->array, vec->size);
 }
 
-static void resize(struct vec *vec) {
+static void resize(struct vector *vec) {
     vec->capacity <<= 1;
     vec->array = realloc(vec->array, vec->capacity * sizeof(uintptr_t));
 }
 
-inline static size_t getRemainingCountExclusive(struct vec *vec, size_t index) {
+inline static size_t getRemainingCountExclusive(struct vector *vec,
+                                                size_t index) {
     return vec->size - (index + 1);
 }
 
-inline static size_t getRemainingCountInclusive(struct vec *vec, size_t index) {
+inline static size_t getRemainingCountInclusive(struct vector *vec,
+                                                size_t index) {
     return vec->size - index;
+}
+
+static CTLVector initVector(CTLVector vector, CTLCompareFunction entryComparer,
+                            size_t startCapacity) {
+    if (startCapacity <= 0) {
+        startCapacity = DEFAULT_CAPACITY;
+    }
+
+    vector->array = calloc(sizeof(void **), startCapacity);
+    vector->capacity = startCapacity;
+    vector->entryComaparer = entryComparer;
+    vector->size = 0;
+    return vector;
 }

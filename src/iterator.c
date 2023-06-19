@@ -17,11 +17,6 @@ struct iterableNodeChain {
     size_t index;
 };
 
-struct iterableNode {
-    struct iterableNode *next;
-    void *value;
-};
-
 struct iterableArray {
     enum ctlIterType type;
     void **array;

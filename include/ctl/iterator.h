@@ -2,7 +2,11 @@
 #define CTL_ITERATOR_H
 #include "ctl.h"
 
-typedef struct iterableNode *CTLIterableNode;
+typedef struct iterableNode {
+    struct iterableNode *next;
+    void *value;
+} *CTLIterableNode;
+
 typedef struct iterableArray *CTLIterableArray;
 typedef union __CTLIterator *CTLIterator;
 

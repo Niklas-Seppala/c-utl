@@ -1,3 +1,8 @@
+#include <check.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "assert.h"
 #include "ctl.h"
 #include "ctl/binarytree.h"
@@ -8,10 +13,6 @@
 #include "ctl/io/logger.h"
 #include "ctl/linkedlist.h"
 #include "ctl/treeset.h"
+#include "ctl/vector.h"
 
-int main() {
-    INDEX_IN_BOUNDS(11L, 0L, 2L);
-    INDEX_IN_LOWER_BOUND(5L, 6L);
-    INDEX_IN_UPPER_BOUND(11L, 10L);
-    return 0;
-}
+int main() { return 0; }

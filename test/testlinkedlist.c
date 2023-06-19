@@ -8,6 +8,8 @@ static const char *item2 = "item2";
 static const char *item3 = "item3";
 static const char *item4 = "item4";
 
+const char *items[] = {"item1", "item2", "item3", "item4"};
+
 typedef struct house {
     int rooms;
     char *name;
@@ -522,6 +524,20 @@ START_TEST(testLinkedListIterator) {
 }
 END_TEST
 
+START_TEST(testLinkedListRawIterator) {
+    CTLLinkedList list = CTLLinkedListCreate();
+    CTLLinkedListAddAll(list, 4, item1, item2, item3, item4);
+    ck_assert_int_eq(4, CTLLinkedListSize(list));
+
+    CTLIterableNode node = CTLLinkedListRawIterator(list);
+    for (size_t i = 0; node != NULL; node = node->next) {
+        ck_assert_str_eq(items[i++], node->value);
+    }
+
+    CTLLinkedListFree(&list);
+}
+END_TEST
+
 static void checkEntry(const void *entry) { ck_assert_ptr_nonnull(entry); }
 
 START_TEST(testLinkedListForEach) {
@@ -559,4 +575,5 @@ void test_linked_list_load_cases(Suite *suite) {
     test_add_case(suite, testLinkedListForEach);
     test_add_case(suite, testLinkedListRemoveLast);
     test_add_case(suite, testLinkedListRemoveFirst);
+    test_add_case(suite, testLinkedListRawIterator);
 }

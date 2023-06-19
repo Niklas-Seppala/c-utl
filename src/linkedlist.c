@@ -8,21 +8,21 @@
 #define EMPTY 0
 #define INVALID -1
 
-struct __CTLLinkedListNode {
-    struct __CTLLinkedListNode *next;
-    const void *entry;
-};
+// struct CTLLinkedListNode {
+//     struct CTLLinkedListNode *next;
+//     const void *entry;
+// };
 
 struct __CTLLinkedList {
-    struct __CTLLinkedListNode *head;
-    struct __CTLLinkedListNode *tail;
+    struct CTLLinkedListNode *head;
+    struct CTLLinkedListNode *tail;
     CTLIterator iter;
     size_t size;
 };
 
 #ifdef DEBUG
 void CTLLinkedListDebugPrint(CTLLinkedList list) {
-    struct __CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *head = list->head;
     printf("----------------------------------------------------\n");
     printf("LinkedList %p size: %ld\n", (void *)list, list->size);
     printf("head: %p tail: %p\n", (void *)list->head, (void *)list->tail);
@@ -37,7 +37,7 @@ void CTLLinkedListDebugPrint(CTLLinkedList list) {
 }
 
 void CTLLinkedListDebugPrintf(CTLLinkedList list, CTLObjectToString provider) {
-    struct __CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *head = list->head;
     printf("----------------------------------------------------\n");
     printf("LinkedList %p size: %ld\n", (void *)list, list->size);
     printf("head: %p tail: %p\n", (void *)list->head, (void *)list->tail);
@@ -53,11 +53,11 @@ void CTLLinkedListDebugPrintf(CTLLinkedList list, CTLObjectToString provider) {
 #endif
 
 inline static void __CTLUnlinkAndFreeNode(CTLLinkedList list,
-                                          struct __CTLLinkedListNode **node,
-                                          struct __CTLLinkedListNode *prev);
-inline static void __CTLAttachTo(struct __CTLLinkedListNode *attach,
-                                 struct __CTLLinkedListNode *node);
-inline static struct __CTLLinkedListNode *__CTLAllocateEntryNode(
+                                          struct CTLLinkedListNode **node,
+                                          struct CTLLinkedListNode *prev);
+inline static void __CTLAttachTo(struct CTLLinkedListNode *attach,
+                                 struct CTLLinkedListNode *node);
+inline static struct CTLLinkedListNode *__CTLAllocateEntryNode(
     const void *entry);
 
 CTLLinkedList CTLLinkedListCreate(void) {
@@ -71,9 +71,9 @@ CTLLinkedList CTLLinkedListCreate(void) {
 
 void CTLLinkedListFree(CTLLinkedList *list) {
     NOT_NULL(list);
-    struct __CTLLinkedListNode *head = (*list)->head;
+    struct CTLLinkedListNode *head = (*list)->head;
     while (head != NULL) {
-        struct __CTLLinkedListNode *next = head->next;
+        struct CTLLinkedListNode *next = head->next;
         free(head);
         head = next;
     }
@@ -91,7 +91,7 @@ CTLLinkedList CTLLinkedListCopy(CTLLinkedList list) {
         return copy;
     }
 
-    struct __CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *head = list->head;
     while (head != NULL) {
         CTLLinkedListAdd(copy, head->entry);
         head = head->next;
@@ -118,7 +118,7 @@ const void *CTLLinkedListGet(CTLLinkedList list, size_t atIndex) {
         return NULL;
     }
 
-    struct __CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *head = list->head;
     while (head != NULL) {
         if ((slot++ == atIndex)) {
             const void *entry = head->entry;
@@ -137,8 +137,8 @@ const void *CTLLinkedListRemoveAt(CTLLinkedList list, size_t atIndex) {
         return NULL;
     }
 
-    struct __CTLLinkedListNode *head = list->head;
-    struct __CTLLinkedListNode *prev = NULL;
+    struct CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *prev = NULL;
     while (head != NULL) {
         if ((slot++ == atIndex)) {
             const void *entry = head->entry;
@@ -156,7 +156,7 @@ const void *CTLLinkedListRemoveFirst(CTLLinkedList list) {
     if (CTLLinkedListIsEmpty(list)) {
         return NULL;
     }
-    struct __CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *head = list->head;
     list->head = head->next;
     if (list->tail == head) {
         list->tail = head->next;
@@ -170,8 +170,8 @@ const void *CTLLinkedListRemoveFirst(CTLLinkedList list) {
 
 const void *CTLLinkedListRemoveLast(CTLLinkedList list) {
     NOT_NULL(list);
-    struct __CTLLinkedListNode *head = list->head;
-    struct __CTLLinkedListNode *prev = NULL;
+    struct CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *prev = NULL;
     while (head->next != NULL) {
         prev = head;
         head = head->next;
@@ -186,7 +186,7 @@ size_t CTLLinkedListInsertAt(CTLLinkedList list, const void *entry,
     NOT_NULL(list);
 
     size_t slot = EMPTY;
-    struct __CTLLinkedListNode *node = __CTLAllocateEntryNode(entry);
+    struct CTLLinkedListNode *node = __CTLAllocateEntryNode(entry);
 
     if (CTLLinkedListIsEmpty(list)) {
         list->head = node;
@@ -195,8 +195,8 @@ size_t CTLLinkedListInsertAt(CTLLinkedList list, const void *entry,
         return slot;
     }
 
-    struct __CTLLinkedListNode *head = list->head;
-    struct __CTLLinkedListNode *prev = NULL;
+    struct CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *prev = NULL;
     while (head != NULL) {
         if ((slot == atIndex)) {
             if (prev == NULL) {
@@ -222,6 +222,11 @@ void CTLLinkedListIteratorReset(CTLLinkedList list) {
     CTLIteratorResetHead(list->iter);
 }
 
+inline CTLIterableNode CTLLinkedListRawIterator(CTLLinkedList list) {
+    NOT_NULL(list);
+    return (CTLIterableNode)list->head;
+}
+
 inline CTLIterator CTLLinkedListIterator(CTLLinkedList list) {  // TODO: ????
     if (list->iter == NULL) {
         list->iter =
@@ -236,7 +241,7 @@ inline CTLIterator CTLLinkedListIteratorAllocate(CTLLinkedList list) {
 
 void CTLLinkedListAdd(CTLLinkedList list, const void *entry) {
     NOT_NULL(list);
-    struct __CTLLinkedListNode *node = __CTLAllocateEntryNode(entry);
+    struct CTLLinkedListNode *node = __CTLAllocateEntryNode(entry);
 
     if (CTLLinkedListIsEmpty(list)) {
         list->head = node;
@@ -261,13 +266,13 @@ void CTLLinkedListAddAll(CTLLinkedList list, size_t count, ...) {
 
 void CTLLinkedListAddFirst(CTLLinkedList list, const void *entry) {
     NOT_NULL(list);
-    struct __CTLLinkedListNode *node = __CTLAllocateEntryNode(entry);
+    struct CTLLinkedListNode *node = __CTLAllocateEntryNode(entry);
 
     if (CTLLinkedListIsEmpty(list)) {
         list->head = node;
         list->tail = node;
     } else {
-        struct __CTLLinkedListNode *head = list->head;
+        struct CTLLinkedListNode *head = list->head;
         node->next = head;
         list->head = node;
     }
@@ -277,10 +282,10 @@ void CTLLinkedListAddFirst(CTLLinkedList list, const void *entry) {
 CTLLinkedList CTLLinkedListFilter(CTLLinkedList list, CTLpredicate filter) {
     NOT_NULL(list);
     NOT_NULL(filter);
-    struct __CTLLinkedListNode *head = list->head;
-    struct __CTLLinkedListNode *prev = NULL;
+    struct CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *prev = NULL;
     while (head != NULL) {
-        struct __CTLLinkedListNode *next = head->next;
+        struct CTLLinkedListNode *next = head->next;
         if (!filter(head->entry)) {
             __CTLUnlinkAndFreeNode(list, &head, prev);
             // If multiple filters happen in a row, last valid
@@ -299,9 +304,9 @@ void CTLLinkedListClear(CTLLinkedList list) {
         return;
     }
 
-    struct __CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *head = list->head;
     while (head != NULL) {
-        struct __CTLLinkedListNode *next = head->next;
+        struct CTLLinkedListNode *next = head->next;
         free(head);
         head = next;
     }
@@ -337,7 +342,7 @@ const void *CTLLinkedListFind(CTLLinkedList list, const void *entry,
     if (CTLLinkedListIsEmpty(list)) {
         return NULL;
     }
-    struct __CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *head = list->head;
     while (head != NULL) {
         if (compareFunction(head->entry, entry) == EQ) {
             return head->entry;
@@ -349,10 +354,10 @@ const void *CTLLinkedListFind(CTLLinkedList list, const void *entry,
 
 CTLLinkedList CTLLinkedListReverse(CTLLinkedList list) {
     NOT_NULL(list);
-    struct __CTLLinkedListNode *prev = NULL;
-    struct __CTLLinkedListNode *head = list->head;
-    struct __CTLLinkedListNode *newTail = head;
-    struct __CTLLinkedListNode *next = NULL;
+    struct CTLLinkedListNode *prev = NULL;
+    struct CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *newTail = head;
+    struct CTLLinkedListNode *next = NULL;
     while (head != NULL) {
         next = head->next;
         head->next = prev;
@@ -368,8 +373,8 @@ const void *CTLLinkedListRemove(CTLLinkedList list, const void *entry,
                                 CTLCompareFunction compareFunction) {
     NOT_NULL(list);
     NOT_NULL(compareFunction);
-    struct __CTLLinkedListNode *head = list->head;
-    struct __CTLLinkedListNode *prev = NULL;
+    struct CTLLinkedListNode *head = list->head;
+    struct CTLLinkedListNode *prev = NULL;
     while (head != NULL) {
         if (compareFunction(head->entry, entry) == EQ) {
             const void *value = head->entry;
@@ -387,7 +392,7 @@ int64_t CTLLinkedListIndexOf(CTLLinkedList list, const void *entry,
     NOT_NULL(list);
     NOT_NULL(compareFuntion);
     size_t index = 0;
-    struct __CTLLinkedListNode *node = list->head;
+    struct CTLLinkedListNode *node = list->head;
     while (node != NULL) {
         if (compareFuntion(entry, node->entry) == EQ) {
             return index;
@@ -402,7 +407,7 @@ bool CTLLinkedListContains(CTLLinkedList list, const void *entry,
                            CTLCompareFunction compareFuntion) {
     NOT_NULL(list);
     NOT_NULL(compareFuntion);
-    struct __CTLLinkedListNode *node = list->head;
+    struct CTLLinkedListNode *node = list->head;
     while (node != NULL) {
         if (compareFuntion(entry, node->entry) == EQ) {
             return true;
@@ -416,7 +421,7 @@ void CTLLinkedListForEach(CTLLinkedList list,
                           CTLListEntryConsumer entryConsumer) {
     NOT_NULL(list);
     NOT_NULL(entryConsumer);
-    struct __CTLLinkedListNode *node = list->head;
+    struct CTLLinkedListNode *node = list->head;
     while (node != NULL) {
         entryConsumer(node->entry);
         node = node->next;
@@ -424,8 +429,8 @@ void CTLLinkedListForEach(CTLLinkedList list,
 }
 
 static inline void __CTLUnlinkAndFreeNode(CTLLinkedList list,
-                                          struct __CTLLinkedListNode **node,
-                                          struct __CTLLinkedListNode *prev) {
+                                          struct CTLLinkedListNode **node,
+                                          struct CTLLinkedListNode *prev) {
     NOT_NULL(list);
     NOT_NULL(node);
 
@@ -447,16 +452,16 @@ static inline void __CTLUnlinkAndFreeNode(CTLLinkedList list,
     *node = NULL;
 }
 
-inline static struct __CTLLinkedListNode *__CTLAllocateEntryNode(
+inline static struct CTLLinkedListNode *__CTLAllocateEntryNode(
     const void *entry) {
-    struct __CTLLinkedListNode *node =
-        calloc(1, sizeof(struct __CTLLinkedListNode));
+    struct CTLLinkedListNode *node =
+        calloc(1, sizeof(struct CTLLinkedListNode));
     node->entry = entry;
     return node;
 }
 
-inline static void __CTLAttachTo(struct __CTLLinkedListNode *attach,
-                                 struct __CTLLinkedListNode *node) {
+inline static void __CTLAttachTo(struct CTLLinkedListNode *attach,
+                                 struct CTLLinkedListNode *node) {
     NOT_NULL(attach);
     NOT_NULL(node);
     node->next = attach->next;

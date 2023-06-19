@@ -4,6 +4,11 @@
 #include "ctl/compare.h"
 #include "ctl/iterator.h"
 
+struct CTLLinkedListNode {
+    struct CTLLinkedListNode *next;
+    const void *entry;
+};
+
 typedef struct __CTLLinkedList *CTLLinkedList;
 typedef void (*CTLListEntryConsumer)(const void *entry);
 
@@ -226,6 +231,14 @@ void CTLLinkedListForEach(CTLLinkedList list,
  * @return CTLIterator
  */
 CTLIterator CTLLinkedListIterator(CTLLinkedList list);
+
+/**
+ * @brief
+ *
+ * @param list
+ * @return CTLIterableNode
+ */
+CTLIterableNode CTLLinkedListRawIterator(CTLLinkedList list);
 
 /**
  * @brief
