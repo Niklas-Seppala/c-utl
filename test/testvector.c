@@ -78,8 +78,7 @@ START_TEST(testVectorContains) {
 END_TEST
 
 START_TEST(testVectorContainsAll) {
-    struct vector stackVector;
-    CTLVector vec = CTLVectorStackAlloc(&stackVector, CTLCompareInt, 10);
+    CTLVector vec = getIntegerVector();
     ck_assert_int_eq(0, CTLVectorSize(vec));
 
     CTLLinkedList list = CTLLinkedListCreate();
@@ -96,6 +95,7 @@ START_TEST(testVectorContainsAll) {
     ck_assert(CTLVectorContainsAll(vec, values));
 
     CTLLinkedListFree(&list);
+    CTLVectorFree(&vec);
 }
 END_TEST
 

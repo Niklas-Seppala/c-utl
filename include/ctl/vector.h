@@ -26,18 +26,6 @@ CTLVector CTLVectorHeapAlloc(CTLCompareFunction entryComparer,
 /**
  * @brief
  *
- * @param stackVector
- * @param entryComparer
- * @param startCapactiy
- * @return CTLVector
- */
-CTLVector CTLVectorStackAlloc(CTLVector stackVector,
-                              CTLCompareFunction entryComparer,
-                              size_t startCapactiy);
-
-/**
- * @brief
- *
  * @param vec
  */
 void CTLVectorFree(CTLVector *vec);

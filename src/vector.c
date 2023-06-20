@@ -46,13 +46,6 @@ static CTLVector initVector(CTLVector stackVector,
 // Public API implementations
 // -------------------------------------------------- //
 
-CTLVector CTLVectorStackAlloc(CTLVector stackVector,
-                              CTLCompareFunction entryComparer,
-                              size_t startCapacity) {
-    NOT_NULL(stackVector);
-    return initVector(stackVector, entryComparer, startCapacity);
-}
-
 CTLVector CTLVectorHeapAlloc(CTLCompareFunction entryComparer,
                              size_t startCapacity) {
     NOT_NULL(entryComparer);
