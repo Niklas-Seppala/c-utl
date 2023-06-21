@@ -10,7 +10,6 @@ struct CTLLinkedListNode {
 };
 
 typedef struct __CTLLinkedList *CTLLinkedList;
-typedef void (*CTLListEntryConsumer)(const void *entry);
 
 #ifdef DEBUG
 void CTLLinkedListDebugPrint(CTLLinkedList list);
@@ -221,8 +220,7 @@ CTLLinkedList CTLLinkedListCopy(CTLLinkedList list);
  * @param list
  * @param enntryConsumer
  */
-void CTLLinkedListForEach(CTLLinkedList list,
-                          CTLListEntryConsumer enntryConsumer);
+void CTLLinkedListForEach(CTLLinkedList list, CTLConsumer enntryConsumer);
 
 /**
  * @brief

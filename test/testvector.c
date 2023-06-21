@@ -252,6 +252,45 @@ START_TEST(testVectorIterator) {
 }
 END_TEST
 
+int forEachIndex = 0;  // :)
+static void consume(const void *entry) {
+    ck_assert_ptr_eq(intValues + forEachIndex, entry);
+    forEachIndex++;
+}
+START_TEST(testVectorForEach) {
+    CTLVector vec = getIntegerVector();
+    for (size_t i = 0; i < VALUES_LEN; i++) {
+        int *addr = intValues + i;
+        CTLVectorAdd(vec, addr);
+    }
+    ck_assert_int_eq(20, CTLVectorSize(vec));
+
+    CTLVectorForEach(vec, consume);
+    forEachIndex = 0;
+    CTLVectorFree(&vec);
+}
+END_TEST
+
+static void consumeVarArgs(const void *entry, va_list args) {
+    int *index = va_arg(args, int *);
+    ck_assert_ptr_eq(intValues + *index, entry);
+    *index = *index + 1;
+}
+START_TEST(testVectorForEachVarArgs) {
+    CTLVector vec = getIntegerVector();
+    for (size_t i = 0; i < VALUES_LEN; i++) {
+        int *addr = intValues + i;
+        CTLVectorAdd(vec, addr);
+    }
+    ck_assert_int_eq(20, CTLVectorSize(vec));
+
+    int i = 0;
+    CTLVectorForEachVarArg(vec, consumeVarArgs, &i);
+
+    CTLVectorFree(&vec);
+}
+END_TEST
+
 START_TEST(testVectorIteratorReset) {
     CTLVector vec = getIntegerVector();
 
@@ -318,4 +357,6 @@ void loadVectorTestCases(Suite *suite) {
     test_add_case(suite, testVectorClear);
     test_add_case(suite, testVectorIterator);
     test_add_case(suite, testVectorIteratorReset);
+    test_add_case(suite, testVectorForEach);
+    test_add_case(suite, testVectorForEachVarArgs);
 }

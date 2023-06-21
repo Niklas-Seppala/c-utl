@@ -191,4 +191,19 @@ void CTLVectorClear(CTLVector vec);
  */
 CTLIterator CTLVectorIterator(CTLVector vec);
 
+/**
+ * @brief
+ *
+ */
+void CTLVectorForEach(CTLVector vec, CTLConsumer consumer);
+
+/**
+ * @brief
+ *
+ * @param vec
+ * @param consumer
+ * @param ...
+ */
+void CTLVectorForEachVarArg(CTLVector vec, CTLConsumerVarArg consumer, ...);
+
 #endif  // CTL_VECTOR_H

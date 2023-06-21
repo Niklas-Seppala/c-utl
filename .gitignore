@@ -2,4 +2,7 @@
 .VS*
 obj/
 out/
+ctl*
+*.o
+*.d
 **/*.log

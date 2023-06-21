@@ -8,11 +8,6 @@
 #define EMPTY 0
 #define INVALID -1
 
-// struct CTLLinkedListNode {
-//     struct CTLLinkedListNode *next;
-//     const void *entry;
-// };
-
 struct __CTLLinkedList {
     struct CTLLinkedListNode *head;
     struct CTLLinkedListNode *tail;
@@ -417,8 +412,7 @@ bool CTLLinkedListContains(CTLLinkedList list, const void *entry,
     return false;
 }
 
-void CTLLinkedListForEach(CTLLinkedList list,
-                          CTLListEntryConsumer entryConsumer) {
+void CTLLinkedListForEach(CTLLinkedList list, CTLConsumer entryConsumer) {
     NOT_NULL(list);
     NOT_NULL(entryConsumer);
     struct CTLLinkedListNode *node = list->head;

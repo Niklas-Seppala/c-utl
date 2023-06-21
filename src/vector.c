@@ -1,5 +1,6 @@
 #include "ctl/vector.h"
 
+#include <stdarg.h>
 #include <string.h>
 
 #include "ctl/math.h"
@@ -247,6 +248,26 @@ inline void CTLVectorClear(CTLVector vec) { vec->size = 0; }
 
 CTLIterator CTLVectorIterator(CTLVector vec) {
     return CTLIteratorAllocateArrayIterator(vec->array, vec->size);
+}
+
+void CTLVectorForEach(CTLVector vec, CTLConsumer consumer) {
+    NOT_NULL(vec);
+    NOT_NULL(consumer);
+    for (size_t i = 0; i < vec->size; i++) {
+        consumer(vec->array[i]);
+    }
+}
+
+void CTLVectorForEachVarArg(CTLVector vec, CTLConsumerVarArg consumer, ...) {
+    NOT_NULL(vec);
+    NOT_NULL(consumer);
+    va_list args;
+    va_start(args, consumer);
+    for (size_t i = 0; i < vec->size; i++) {
+        va_start(args, consumer);
+        consumer(vec->array[i], args);
+        va_end(args);
+    }
 }
 
 static void resize(struct vector *vec) {

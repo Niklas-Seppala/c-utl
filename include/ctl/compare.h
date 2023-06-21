@@ -1,9 +1,12 @@
 #if !defined(CTL_COMPARE_H)
 #define CTL_COMPARE_H
+#include <stdarg.h>
 #include <stdbool.h>
 
 typedef int (*CTLCompareFunction)(const void* a, const void* b);
 typedef bool (*CTLpredicate)(const void*);
+typedef void (*CTLConsumer)(const void*);
+typedef void (*CTLConsumerVarArg)(const void*, va_list);
 typedef const char*((*CTLObjectToString)(const void*));
 
 // ----------------------------------------------
