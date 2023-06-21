@@ -2,7 +2,7 @@ COMPLETE_PRINT=\033[1;32mSuccess \033[0m
 
 BUILD=0.0.1
 BINARY=ctl-${BUILD}
-CODEDIRS=. src src/asd
+CODEDIRS=. src
 INCDIRS=./include/
 
 CC=gcc
@@ -26,6 +26,8 @@ $(BINARY): $(OBJECTS)
 
 clean:
 	@rm -rf $(BINARY) $(OBJECTS) $(DEPFILES) 2>/dev/null || true
+	@make clean -C ./test
+
 
 distribute: clean
 	tar zcvf dist.tgz *
@@ -50,7 +52,7 @@ unit-test:
 	@make run -C ./test
 
 compile-unit-test:
-	@make build -C ./test
+	@make -C ./test
 
 memcheck-test:
 	@make run MEMCHECK=-fsanitize=address S_LIBSAN=-static-libasan -C ./test

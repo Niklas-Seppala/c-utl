@@ -1,48 +1,49 @@
-OBJ_DIR:=../obj/
-OUT_DIR:=../out/
-SRC_DIR:=../src/
-TEST_DIR:=./
+COMPLETE_PRINT=\033[1;32mSuccess\033[0m
 
-#export CK_FORK=foo
+BUILD=0.0.1
+BINARY=ctl-${BUILD}-test
+CODEDIRS=. ../src src
+INCDIRS=./include/ ../include/
 
 CC=gcc
-HEADERS=-I../include -Iinclude
-
 MEMCHECK=
 S_LIBSAN=
-DEBUG=-g -DDEBUG $(MEMCHECK)
 TEST=-lm -lcheck -lsubunit $(S_LIBSAN) $(MEMCHECK)
-
+DEBUG=-g -DDEBUG $(MEMCHECK)
+MKDIR_P = mkdir -p
+DEPFLAGS=-MP -MD
+RT_NULL_CHECKS=-DRT_NULL_CHECKS -DRT_NULL_KILLS -DCTL_MERGESORT_DYNAMIC_ALLOC -DRT_INDEX_BOUNDS_CHECKS
 CC_WARN=-Wall -Wshadow -Wextra -Wformat=2 -Wpedantic -fmax-errors=10 -Wno-unknown-pragmas
-CC_FLAGS=${CC_WARN} -O0 -std=gnu99 ${DEBUG} -DRT_NULL_CHECKS -DRT_INDEX_BOUNDS_CHECKS
-PROJECT_NAME=ctl
-BUILD=0.0.1
-EXE_NAME=${PROJECT_NAME}-${BUILD}
-TEST_NAME=${EXE_NAME}-tests
+CFLAGS=${CC_WARN} -O0 -std=gnu99 ${DEBUG} ${RT_NULL_CHECKS} $(foreach D,$(INCDIRS),-I$(D)) ${DEPFLAGS}
 
-SRC_FILES=$(shell find ../src -type f \( -iname "*.c" ! -iname "main.c" \))
+CFILES=$(foreach D,$(CODEDIRS),$(wildcard $(D)/*.c))
+OBJECTS=$(patsubst %.c,%.o,$(CFILES))
+DEPFILES=$(patsubst %.c,%.d,$(CFILES))
 
-SRC := $(SRC_FILES:${SRC_DIR}%=%)
-OBJS := $(SRC:%.c=${OBJ_DIR}%.o)
-BINS := $(SRC:%.c=%)
-COMPLETE_PRINT=\033[1;32mSuccess \033[0m
+all: $(BINARY)
+$(BINARY): $(OBJECTS)
+	$(CC) $^ -o $@ ${TEST}
+	@echo "${COMPLETE_PRINT}"
+	@echo "\n"
 
-suite:
-	${CC} -c ${CC_FLAGS} ${HEADERS} testlinkedlist.c -o ${OBJ_DIR}testlinkedlist.o
-	${CC} -c ${CC_FLAGS} ${HEADERS} test.c -o ${OBJ_DIR}test.o
-	${CC} -c ${CC_FLAGS} ${HEADERS} testhashmap.c -o ${OBJ_DIR}testhashmap.o
-	${CC} -c ${CC_FLAGS} ${HEADERS} testvector.c -o ${OBJ_DIR}testvector.o
-
-build: suite ${BINS}
-	${CC} ${OBJS} ${OBJ_DIR}test.o ${OBJ_DIR}testlinkedlist.o ${OBJ_DIR}testhashmap.o ${OBJ_DIR}testvector.o ${TEST} -o ${OUT_DIR}${TEST_NAME}
-
-%: %.o
-	
-%.o: ${SRC_DIR}%.c
-	${CC} -c ${CC_FLAGS} ${HEADERS} $< -o ${OBJ_DIR}$@
-
-run: build
-	@${OUT_DIR}${TEST_NAME}
+%.o:%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	@rm $(OBJ_DIR)* $(OUT_DIR)* *.o 2>/dev/null || true
+	@rm -rf $(BINARY) $(OBJECTS) $(DEPFILES) 2>/dev/null || true
+
+distribute: clean
+	tar zcvf dist.tgz *
+
+diff:
+	@git status
+	@git diff --stat
+
+# include the dependencies
+-include $(DEPFILES)
+
+# add .PHONY so that the non-targetfile - rules work even if a file with the same name exists.
+.PHONY: all clean distribute diff
+	
+run: $(BINARY)
+	./${BINARY} ${RUN_ARGS}
