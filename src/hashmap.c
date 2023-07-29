@@ -421,8 +421,7 @@ static CTLKeyHashSet __CTLKeySetCreate(CTLHashMap map) {
 
 static bool __CTLKeyHashSetAdd(CTLKeyHashSet set, const void *entry,
                                size_t size) {
-    NOT_NULL(set);
-    NOT_NULL(entry);
+    NOT_NULL(set, entry);
     if (CTLHashMapContainsKey(set, entry, size)) {
         return false;
     } else {

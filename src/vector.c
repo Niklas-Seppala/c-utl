@@ -55,8 +55,7 @@ CTLVector CTLVectorHeapAlloc(CTLCompareFunction entryComparer,
 }
 
 void CTLVectorFree(CTLVector *vec) {
-    NOT_NULL(*vec);
-    NOT_NULL((*vec)->array)
+    NOT_NULL(*vec, (*vec)->array);
     free((*vec)->array);
     free(*vec);
     *vec = NULL;
@@ -153,8 +152,7 @@ bool CTLVectorContains(CTLVector vec, const void *value) {
 }
 
 bool CTLVectorContainsAll(CTLVector vec, CTLIterator values) {
-    NOT_NULL(vec);
-    NOT_NULL(values);
+    NOT_NULL(vec, values);
 
     while (CTLIteratorHasNext(values)) {
         if (!CTLVectorContains(vec, CTLIteratorNext(values))) {
@@ -165,8 +163,7 @@ bool CTLVectorContainsAll(CTLVector vec, CTLIterator values) {
 }
 
 bool CTLVectorRemoveAll(CTLVector vec, CTLIterator values) {
-    NOT_NULL(vec);
-    NOT_NULL(values);
+    NOT_NULL(vec, values);
 
     bool result = false;
     while (CTLIteratorHasNext(values)) {
@@ -188,11 +185,8 @@ void CTLVectorRemoveRange(CTLVector vec, size_t start, size_t end) {
 }
 
 bool CTLVectorRetainAll(CTLVector vec, CTLIterator values) {
-    NOT_NULL(vec);
-    NOT_NULL(values);
-
+    NOT_NULL(vec, values);
     bool result = false;
-
     for (size_t i = 0; i < vec->size; i++) {
         void *element = vec->array[i];
         bool found = false;
@@ -215,9 +209,7 @@ bool CTLVectorRetainAll(CTLVector vec, CTLIterator values) {
 }
 
 bool CTLVectorRemoveIf(CTLVector vec, CTLpredicate predicate) {
-    NOT_NULL(vec);
-    NOT_NULL(predicate);
-
+    NOT_NULL(vec, predicate);
     bool result = false;
     for (size_t i = 0; i < vec->size; i++) {
         const void *element = vec->array[i];
@@ -230,9 +222,7 @@ bool CTLVectorRemoveIf(CTLVector vec, CTLpredicate predicate) {
 }
 
 bool CTLVectorRetainIf(CTLVector vec, CTLpredicate predicate) {
-    NOT_NULL(vec);
-    NOT_NULL(predicate);
-
+    NOT_NULL(vec, predicate);
     bool result = false;
     for (size_t i = 0; i < vec->size; i++) {
         const void *element = vec->array[i];
@@ -251,16 +241,14 @@ CTLIterator CTLVectorIterator(CTLVector vec) {
 }
 
 void CTLVectorForEach(CTLVector vec, CTLConsumer consumer) {
-    NOT_NULL(vec);
-    NOT_NULL(consumer);
+    NOT_NULL(vec, consumer);
     for (size_t i = 0; i < vec->size; i++) {
         consumer(vec->array[i]);
     }
 }
 
 void CTLVectorForEachVarArg(CTLVector vec, CTLConsumerVarArg consumer, ...) {
-    NOT_NULL(vec);
-    NOT_NULL(consumer);
+    NOT_NULL(vec, consumer);
     va_list args;
     va_start(args, consumer);
     for (size_t i = 0; i < vec->size; i++) {

@@ -99,6 +99,7 @@ void CTLIteratorResetHead(CTLIterator iterator) {
 }
 
 void CTLIteratorUnderlyingChanged(CTLIterator iterator, size_t indexDelta) {
+    NOT_NULL(iterator);
     switch (iterator->type) {
         case ITER_ARRAY:
             iterator->asArray.index += indexDelta;

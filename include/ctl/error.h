@@ -1,6 +1,8 @@
 #if !defined(CTL_ERROR_H)
 #define CTL_ERROR_H
 
+#include <stdarg.h>
+
 #include "ctl.h"
 #include "ctl/terminal.h"
 #include "stdio.h"
@@ -56,19 +58,9 @@
 #endif
 
 #ifdef RT_NULL_CHECKS
-// Assert that provided pointer is not NULL.
-// Process dies if NULLs are set fatal in compile
-// flags.
-#define NOT_NULL(ptr)                                                    \
-    {                                                                    \
-        if (ptr == NULL) {                                               \
-            PRINTF_ERROR("%s\n",                                         \
-                         "Null pointer error on variable \"" #ptr "\""); \
-            NULL_PANIC;                                                  \
-        }                                                                \
-    }
-#else
-#define NOT_NULL(ptr) UNDEFINED
+void CTL_NOT_NULL(void *first, ...);
+#define NOT_NULL(...) \
+    { CTL_NOT_NULL(NULL, __VA_ARGS__); }
 #endif
 
 #endif  // CTL_ERROR_H
