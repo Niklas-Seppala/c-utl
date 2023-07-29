@@ -2,7 +2,7 @@
 .VS*
 obj/
 out/
-ctl*
+*test*
 *.o
 *.d
 **/*.log
