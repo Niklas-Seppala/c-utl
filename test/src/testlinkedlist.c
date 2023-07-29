@@ -496,7 +496,7 @@ START_TEST(testLinkedListIterator) {
     CTLLinkedListAddAll(list, 4, item1, item2, item3, item4);
     ck_assert_int_eq(4, CTLLinkedListSize(list));
 
-    CTLIterator iter = CTLLinkedListIterator(list);
+    CTLIterator iter = CTLLinkedListIteratorAllocate(list);
 
     ck_assert(CTLIteratorHasNext(iter));
     ck_assert_ptr_eq(item1, CTLIteratorNext(iter));
@@ -508,7 +508,7 @@ START_TEST(testLinkedListIterator) {
     ck_assert_ptr_eq(item4, CTLIteratorNext(iter));
     ck_assert(!CTLIteratorHasNext(iter));
 
-    CTLLinkedListIteratorReset(list);
+    CTLIteratorResetHead(iter);
 
     ck_assert(CTLIteratorHasNext(iter));
     ck_assert_ptr_eq(item1, CTLIteratorNext(iter));
@@ -521,6 +521,7 @@ START_TEST(testLinkedListIterator) {
     ck_assert(!CTLIteratorHasNext(iter));
 
     CTLLinkedListFree(&list);
+    CTLIteratorFree(&iter);
 }
 END_TEST
 

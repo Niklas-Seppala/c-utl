@@ -6,6 +6,8 @@
 #include "hashfun.h"
 
 typedef struct __CTLHashMap *CTLHashMap;
+typedef CTLHashMap CTLKeyHashSet;
+typedef CTLHashMap CTLKeyTreeSet; /* TODO */
 
 typedef void (*CTLEntryConsumer)(const void *key, const void *value);
 
@@ -168,6 +170,14 @@ const void *CTLHashMapPutIfAbsent(CTLHashMap map, const void *key,
  * @return CTLLinkedList
  */
 CTLLinkedList CTLHashMapAllocateKeyList(CTLHashMap map);
+
+/**
+ * @brief
+ *
+ * @param map
+ * @return CTLKeyHashSet
+ */
+CTLKeyHashSet CTLHashMapAllocateKeySet(CTLHashMap map);
 
 /**
  * @brief

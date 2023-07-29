@@ -28,7 +28,6 @@ void CTLTreeSetAdd(CTLTreeSet tree, const void *entry) {
                      tree->entryComparer);
     tree->size++;
     CTLPrintBinaryNode(tree->root, "", "");
-    printf("\n\n");
 }
 
 inline size_t CTLTreeSetSize(CTLTreeSet tree) { return tree->size; }

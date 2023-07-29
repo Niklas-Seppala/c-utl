@@ -2,7 +2,7 @@ COMPLETE_PRINT=\033[1;32mSuccess\033[0m
 
 BUILD=0.0.1
 BINARY=ctl-${BUILD}-test
-CODEDIRS=. ../src src
+CODEDIRS=${shell ls -d ../src ../src/*/ src}
 INCDIRS=./include/ ../include/
 
 CC=gcc

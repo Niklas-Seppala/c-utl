@@ -226,24 +226,9 @@ void CTLLinkedListForEach(CTLLinkedList list, CTLConsumer enntryConsumer);
  * @brief
  *
  * @param list
- * @return CTLIterator
- */
-CTLIterator CTLLinkedListIterator(CTLLinkedList list);
-
-/**
- * @brief
- *
- * @param list
  * @return CTLIterableNode
  */
 CTLIterableNode CTLLinkedListRawIterator(CTLLinkedList list);
-
-/**
- * @brief
- *
- * @param list
- */
-void CTLLinkedListIteratorReset(CTLLinkedList list);
 
 /**
  * @brief

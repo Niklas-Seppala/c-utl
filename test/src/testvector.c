@@ -84,17 +84,18 @@ START_TEST(testVectorContainsAll) {
     CTLLinkedList list = CTLLinkedListCreate();
     CTLLinkedListAdd(list, intValues + 0);
     CTLLinkedListAdd(list, intValues + 1);
-    CTLIterator values = CTLLinkedListIterator(list);
+    CTLIterator iter = CTLLinkedListIteratorAllocate(list);
 
-    ck_assert(!CTLVectorContainsAll(vec, values));
-    CTLIteratorResetHead(values);
+    ck_assert(!CTLVectorContainsAll(vec, iter));
+    CTLIteratorResetHead(iter);
 
-    CTLVectorAddAll(vec, values);
-    CTLIteratorResetHead(values);
+    CTLVectorAddAll(vec, iter);
+    CTLIteratorResetHead(iter);
 
-    ck_assert(CTLVectorContainsAll(vec, values));
+    ck_assert(CTLVectorContainsAll(vec, iter));
 
     CTLLinkedListFree(&list);
+    CTLIteratorFree(&iter);
     CTLVectorFree(&vec);
 }
 END_TEST

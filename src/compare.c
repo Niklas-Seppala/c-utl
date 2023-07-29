@@ -63,20 +63,6 @@ int CTLCompareString(const void* a, const void* b) {
     return aSum - bSum;
 }
 
-int CTLCompareStringPointer(const void* a, const void* b) {
-    if (a == NULL && b == NULL) return EQ;
-    if (a != NULL && b == NULL) return GT;
-    if (a == NULL && b != NULL) return LT;
-
-    unsigned char* aStr = *(unsigned char**)a;
-    unsigned char* bStr = *(unsigned char**)b;
-    unsigned char aSum, bSum;
-    do {
-        aSum = *aStr++;
-        bSum = *bStr++;
-        if (aSum == 0) {
-            return aSum - bSum;
-        }
-    } while (aSum == bSum);
-    return aSum - bSum;
+inline int CTLCompareStringPointer(const void* a, const void* b) {
+    return CTLCompareString(*(unsigned char**)a, *(unsigned char**)b);
 }

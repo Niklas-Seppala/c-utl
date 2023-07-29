@@ -2,7 +2,7 @@ COMPLETE_PRINT=\033[1;32mSuccess \033[0m
 
 BUILD=0.0.1
 BINARY=ctl-${BUILD}
-CODEDIRS=. src
+CODEDIRS=. src src/io
 INCDIRS=./include/
 
 CC=gcc
@@ -25,16 +25,15 @@ $(BINARY): $(OBJECTS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	@rm -rf $(BINARY) $(OBJECTS) $(DEPFILES) 2>/dev/null || true
-	@make clean -C ./test
-
+	rm -rf $(BINARY) $(OBJECTS) $(DEPFILES) 2>/dev/null || true
+	make clean -C ./test
 
 distribute: clean
 	tar zcvf dist.tgz *
 
 diff:
-	@git status
-	@git diff --stat
+	git status
+	git diff --stat
 
 # include the dependencies
 -include $(DEPFILES)
@@ -43,10 +42,10 @@ diff:
 .PHONY: all clean distribute diff
 	
 run: $(BINARY)
-	@${BINARY} ${RUN_ARGS}
+	${BINARY} ${RUN_ARGS}
 
 valgrind: build
-	valgrind --leak-check=full ${OUT_DIR}${EXE_NAME}
+	valgrind --leak-check=full ${BINARY} ${RUN_ARGS}
 
 unit-test:
 	@make run -C ./test

@@ -1,6 +1,7 @@
 #include "testhashmap.h"
 
 #include "ctl/hashmap.h"
+#include "ctl/hashset.h"
 #include "test.h"
 
 #define ENTRIES 20
@@ -211,6 +212,36 @@ START_TEST(testHashMapAllocateKeyList) {
 }
 END_TEST
 
+START_TEST(testHashMapAllocateKeySet) {
+    CTLHashMap map = getMap();
+    // Store all entries to hashmap.
+    for (int i = 0; i < ENTRIES; i++) {
+        CTLHashMapPut(map, keys[i], 0, values[i]);
+    }
+
+    CTLKeyHashSet keySet = CTLHashMapAllocateKeySet(map);
+    ck_assert_int_eq(ENTRIES, CTLHashSetSize(keySet));
+
+    // Check that all keys in map are present in key set.
+    for (size_t i = 0; i < ENTRIES; i++) {
+        ck_assert(CTLHashSetContains(keySet, keys[i], 0));
+    }
+    CTLHashSetFree(&keySet);
+
+    const char *val = CTLHashMapRemove(map, keys[0], 0);
+    printf("%s\n", val);
+
+    keySet = CTLHashMapAllocateKeySet(map);
+    ck_assert_int_eq(ENTRIES - 1, CTLHashSetSize(keySet));
+
+    // Removed key should not be present anymore.
+    ck_assert(!CTLHashSetContains(keySet, keys[0], 0));
+
+    CTLHashSetFree(&keySet);
+    CTLHashMapFree(&map);
+}
+END_TEST
+
 START_TEST(testHashMapAllocateValuesList) {
     CTLHashMap map = getMap();
     for (int i = 0; i < ENTRIES; i++) {
@@ -320,4 +351,5 @@ void loadHashMapTestCases(Suite *suite) {
     test_add_case(suite, testHashMapResizing);
     test_add_case(suite, testHashMapForEachEntry);
     test_add_case(suite, testHashMapContainsValue);
+    test_add_case(suite, testHashMapAllocateKeySet);
 }

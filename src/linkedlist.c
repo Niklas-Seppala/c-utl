@@ -11,7 +11,6 @@
 struct __CTLLinkedList {
     struct CTLLinkedListNode *head;
     struct CTLLinkedListNode *tail;
-    CTLIterator iter;
     size_t size;
 };
 
@@ -60,7 +59,6 @@ CTLLinkedList CTLLinkedListCreate(void) {
     list->head = NULL;
     list->tail = NULL;
     list->size = EMPTY;
-    list->iter = NULL;
     return list;
 }
 
@@ -71,9 +69,6 @@ void CTLLinkedListFree(CTLLinkedList *list) {
         struct CTLLinkedListNode *next = head->next;
         free(head);
         head = next;
-    }
-    if ((*list)->iter) {
-        free((void *)(*list)->iter);
     }
     free((void *)*list);
     *list = NULL;
@@ -213,21 +208,9 @@ size_t CTLLinkedListInsertAt(CTLLinkedList list, const void *entry,
     return slot;
 }
 
-void CTLLinkedListIteratorReset(CTLLinkedList list) {
-    CTLIteratorResetHead(list->iter);
-}
-
 inline CTLIterableNode CTLLinkedListRawIterator(CTLLinkedList list) {
     NOT_NULL(list);
     return (CTLIterableNode)list->head;
-}
-
-inline CTLIterator CTLLinkedListIterator(CTLLinkedList list) {  // TODO: ????
-    if (list->iter == NULL) {
-        list->iter =
-            CTLIteratorAllocateNodeIterator((CTLIterableNode)list->head);
-    }
-    return list->iter;
 }
 
 inline CTLIterator CTLLinkedListIteratorAllocate(CTLLinkedList list) {

@@ -4,10 +4,6 @@
 
 #include "ctl/error.h"
 
-/**
- * @brief
- *
- */
 enum ctlIterType { ITER_NODE, ITER_ARRAY };
 
 struct iterableNodeChain {
