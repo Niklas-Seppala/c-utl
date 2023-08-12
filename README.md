@@ -8,7 +8,7 @@
 - async thread task
 - Elastic ByteBuffers (stack/heap backed)
 - Pipes
-- Wire protocol
+- Binary wire protocol
 - json
 - yaml
 - utils for TCP/IP, DNS, UDP
