@@ -54,6 +54,8 @@
     "hashset.h": "c",
     "network.h": "c",
     "testthreadpool.h": "c",
-    "threadpool.h": "c"
+    "threadpool.h": "c",
+    "test.h": "c",
+    "check.h": "c"
   }
 }
