@@ -3,7 +3,7 @@
 #include "ctl.h"
 
 typedef struct ctl_thread_pool *CTLThreadPool;
-typedef struct ctl_await *CTLAwait;
+typedef struct ctl_await *CTLAwaitToken;
 
 typedef struct thread_info {
     CTLThreadPool pool;
@@ -20,7 +20,7 @@ typedef void *(*CTLThreadTask)(CTLTaskArgs *);
 
 typedef struct ctl_task {
     CTLThreadTask task;
-    CTLAwait await;
+    CTLAwaitToken await;
     CTLTaskArgs args;
 } CTLTask;
 
@@ -29,7 +29,7 @@ typedef struct ctl_task {
  *
  * @param pool
  */
-void CTLThreadPoolShutdownAwait(CTLThreadPool pool);
+void CTLThreadPoolAwaitShutdown(CTLThreadPool pool);
 
 /**
  * @brief
@@ -55,7 +55,7 @@ void CTLThreadPoolSubmitTask(CTLThreadPool pool, CTLTask *task);
  * @param token 
  * @return void* 
  */
-void *CTLAwaitForResult(CTLAwait token);
+void *CTLAwaitForResult(CTLAwaitToken token);
 
 /**
  * @brief 
@@ -63,7 +63,7 @@ void *CTLAwaitForResult(CTLAwait token);
  * @param results 
  * @param ... 
  */
-void CTLAwaitForAllResults(void * results[], ...);
+void CTLAwaitForAll(void * results[], ...);
 
 /**
  * @brief 
@@ -72,6 +72,6 @@ void CTLAwaitForAllResults(void * results[], ...);
  * @param task 
  * @return CTLAwait 
  */
-CTLAwait CTLThreadPoolSubmitTaskAsync(CTLThreadPool pool, CTLTask *task);
+CTLAwaitToken CTLThreadPoolRunAsync(CTLThreadPool pool, CTLTask *task);
 
 #endif  // CTL_THREADS_THREADPOOL_H

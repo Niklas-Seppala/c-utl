@@ -36,15 +36,7 @@ struct ctl_await {
  * 
  * @return CTLAwait 
  */
-static CTLAwait __CTLAwaitCreate(void);
-
-/**
- * @brief 
- * 
- * @param args 
- * @return void* 
- */
-static void *__CTLRunThread(void *args);
+static CTLAwaitToken __CTLAwaitCreate(void);
 
 /**
  * @brief 
@@ -52,7 +44,7 @@ static void *__CTLRunThread(void *args);
  * @param await 
  * @param result 
  */
-static void __CTLAwaitPostResult(CTLAwait await, void *result);
+static void __CTLAwaitPostResult(CTLAwaitToken await, void *result);
 
 /**
  * @brief 
@@ -69,20 +61,20 @@ void CTLThreadPoolSubmitTask(CTLThreadPool pool, CTLTask *task) {
     pthread_cond_signal(&pool->queueCond);
 }
 
-void CTLAwaitForAllResults(void * results[], ...) {
+void CTLAwaitForAll(void * results[], ...) {
     va_list args;
     va_start(args, results);
 
     int i = 0;
-    CTLAwait await = NULL;
-    while ((await = va_arg(args, CTLAwait)) != NULL) {
+    CTLAwaitToken await = NULL;
+    while ((await = va_arg(args, CTLAwaitToken)) != NULL) {
         void *result = CTLAwaitForResult(await);
         results[i++] = result;
     }
     va_end(args);
 }
 
-void *CTLAwaitForResult(CTLAwait await) {
+void *CTLAwaitForResult(CTLAwaitToken await) {
     while (!await->ready) {
         pthread_cond_wait(&await->waitCond, &await->taskMutex);
     }
@@ -94,7 +86,7 @@ void *CTLAwaitForResult(CTLAwait await) {
     return result;
 }
 
-CTLAwait CTLThreadPoolSubmitTaskAsync(CTLThreadPool pool, CTLTask *task) {
+CTLAwaitToken CTLThreadPoolRunAsync(CTLThreadPool pool, CTLTask *task) {
     task->await = __CTLAwaitCreate();
     pthread_mutex_lock(&pool->queueMutex);
     CTLQueuePush(pool->taskQueue, task);
@@ -103,7 +95,7 @@ CTLAwait CTLThreadPoolSubmitTaskAsync(CTLThreadPool pool, CTLTask *task) {
     return task->await;
 }
 
-void CTLThreadPoolShutdownAwait(CTLThreadPool pool) {
+void CTLThreadPoolAwaitShutdown(CTLThreadPool pool) {
     pool->shutdownFlag = true;
     pthread_cond_broadcast(&pool->queueCond);
 
@@ -142,8 +134,8 @@ CTLThreadPool CTLThreadPoolCreate(const char *name, int nThreads) {
     return pool;
 }
 
-static CTLAwait __CTLAwaitCreate(void) {
-    CTLAwait token = malloc(sizeof(struct ctl_await));
+static CTLAwaitToken __CTLAwaitCreate(void) {
+    CTLAwaitToken token = malloc(sizeof(struct ctl_await));
     if (token == NULL) {
         return NULL;
     }
@@ -156,7 +148,7 @@ static CTLAwait __CTLAwaitCreate(void) {
     return token;
 }
 
-static void __CTLAwaitPostResult(CTLAwait await, void *result) {
+static void __CTLAwaitPostResult(CTLAwaitToken await, void *result) {
     await->result = result;
     await->ready = true;
     pthread_cond_signal(&await->waitCond);

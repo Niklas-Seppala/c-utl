@@ -4,9 +4,10 @@
 #include "ctl.h"
 
 typedef struct bytebuffer {
-    char *bytes;
+    uint8_t *bytes;
     size_t size;
     size_t offset;
+    bool backingBufferIsAllowedToResize;
 } CTLByteBuffer;
 
 /**
@@ -42,7 +43,15 @@ CTLByteBuffer *CTLByteBufferAllocateSlice(CTLByteBuffer *buffer, size_t start, s
  * @param size 
  * @return CTLByteBuffer* 
  */
-CTLByteBuffer *CTLByteBufferWrap(char *bytes, size_t size);
+CTLByteBuffer *CTLByteBufferWrap(uint8_t *bytes, size_t size);
+
+/**
+ * @brief 
+ * 
+ * @param buffer 
+ * @param newOffset 
+ */
+void CTLByteBufferJumpToOffset(CTLByteBuffer *buffer, size_t newOffset);
 
 /**
  * @brief 
@@ -52,7 +61,7 @@ CTLByteBuffer *CTLByteBufferWrap(char *bytes, size_t size);
  * @param end 
  * @return CTLByteBuffer* 
  */
-CTLByteBuffer *CTLByteBufferWrapSlice(char *bytes, size_t start, size_t end);
+CTLByteBuffer *CTLByteBufferWrapSlice(uint8_t *bytes, size_t start, size_t end);
 
 /**
  * @brief 

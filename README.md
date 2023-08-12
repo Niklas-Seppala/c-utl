@@ -5,11 +5,11 @@
 
 ## TODO
 
-- Elastic ByteBuffers (stack/heap)
+- async thread task
+- Elastic ByteBuffers (stack/heap backed)
 - Pipes
 - Wire protocol
 - json
 - yaml
-- TCP/IP, DNS, UDP
+- utils for TCP/IP, DNS, UDP
 - trees (red-black, Btree, Heaps (min&max))
-- File IO ?

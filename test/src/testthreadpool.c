@@ -5,14 +5,14 @@
 #include "testlinkedlist.h"
 #include "unistd.h"
 
-static void *printThreadId2(CTLTaskArgs *args) {
-    sleep(2);
+static void *getThreadIdIn2Secs(CTLTaskArgs *args) {
+    sleep(10);
     return &args->threadInfo.id;
 }
 
 
-static void *printThreadId4(CTLTaskArgs *args) {
-    sleep(4);
+static void *getThreadIdIn4Secs(CTLTaskArgs *args) {
+    sleep(20);
     return &args->threadInfo.id;
 }
 
@@ -22,11 +22,11 @@ START_TEST(testThreadPool) {
     for (int i = 0; i < 8; i++) {
         CTLTask *task = calloc(1, sizeof(CTLTask));
         task->args.args = NULL;
-        task->task = printThreadId2;
+        task->task = getThreadIdIn2Secs;
         tasks[i] = task;
         CTLThreadPoolSubmitTask(pool, task);
     }
-    CTLThreadPoolShutdownAwait(pool);
+    CTLThreadPoolAwaitShutdown(pool);
 
     for (int i = 0; i < 8; i++) {
         free(tasks[i]);
@@ -39,31 +39,26 @@ END_TEST
 START_TEST(testThreadPool2) {
     CTLThreadPool pool = CTLThreadPoolCreate("Pool-2", 8);
 
-    CTLTask *task = calloc(1, sizeof(CTLTask));
-    task->args.args = NULL;
-    task->task = printThreadId2;
+    CTLTask task;
+    task.args.args = NULL;
+    task.task = getThreadIdIn2Secs;
 
+    CTLTask longerTask;
+    longerTask.args.args = NULL;
+    longerTask.task = getThreadIdIn4Secs;
 
-    CTLTask *longerTask = calloc(1, sizeof(CTLTask));
-    longerTask->args.args = NULL;
-    longerTask->task = printThreadId4;
+    CTLAwaitToken token1 = CTLThreadPoolRunAsync(pool, &task);
+    CTLAwaitToken token2 = CTLThreadPoolRunAsync(pool, &longerTask);
 
-    CTLAwait await = CTLThreadPoolSubmitTaskAsync(pool, task);
-    CTLAwait longerAwait = CTLThreadPoolSubmitTaskAsync(pool, longerTask);
+    // Blocks until both resolve.
+    int *result = CTLAwaitForResult(token1);
+    int *longerResult = CTLAwaitForResult(token2);
 
-    sleep(4);
+    printf("result: %d\n", *result);
+    printf("big result: %d\n", *longerResult);
 
-    // Blocks until this task is complete.
-    int *result = CTLAwaitForResult(await);
-    int *longerResult = CTLAwaitForResult(longerAwait);
-    printf("awaited for result: %d\n", *result);
-    printf("awaited for big result: %d\n", *longerResult);
-
-    // Blocks until all tasks are complete.
-    CTLThreadPoolShutdownAwait(pool);
-
-    free(task);
-    free(longerTask);
+    // Blocks until all tasks are complete, and pool is disposed.
+    CTLThreadPoolAwaitShutdown(pool);
 }
 END_TEST
 
@@ -72,26 +67,24 @@ START_TEST(testThreadPool3) {
 
     CTLTask *task = calloc(1, sizeof(CTLTask));
     task->args.args = NULL;
-    task->task = printThreadId2;
-
+    task->task = getThreadIdIn2Secs;
 
     CTLTask *longerTask = calloc(1, sizeof(CTLTask));
     longerTask->args.args = NULL;
-    longerTask->task = printThreadId4;
+    longerTask->task = getThreadIdIn4Secs;
 
-    CTLAwait await = CTLThreadPoolSubmitTaskAsync(pool, task);
-    CTLAwait longerAwait = CTLThreadPoolSubmitTaskAsync(pool, longerTask);
+    CTLAwaitToken token1 = CTLThreadPoolRunAsync(pool, task);
+    CTLAwaitToken token2 = CTLThreadPoolRunAsync(pool, longerTask);
 
-    sleep(4);
+    // Blocks until both tasks resolve.
+    void *collect[2];
+    CTLAwaitForAll(collect, token1, token2, NULL);
 
-    // Blocks until this task is complete.
-    void *res[2];
-    CTLAwaitForAllResults(res, await, longerAwait, NULL);
-    printf("awaited for result: %d\n", *(int*)res[0]);
-    printf("awaited for big result: %d\n", *(int*)res[1]);
+    printf("awaited for result: %d\n", *(int*)collect[0]);
+    printf("awaited for big result: %d\n", *(int*)collect[1]);
 
     // Blocks until all tasks are complete.
-    CTLThreadPoolShutdownAwait(pool);
+    CTLThreadPoolAwaitShutdown(pool);
 
     free(task);
     free(longerTask);
