@@ -1,8 +1,7 @@
-.vscode
+# .vscode
 .VS*
 obj/
 out/
-*test*
 *.o
 *.d
 **/*.log

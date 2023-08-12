@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "name": "Linux",
+      "includePath": ["${workspaceFolder}/**"],
+      "defines": [
+        "DEBUG",
+        "RT_NULL_CHECKS",
+        "TR_GC_FBACKED_BUFFER=1",
+        "TR_GC_SHARED_BUFFER=1",
+        "RT_NULL_KILLS",
+        "RT_INDEX_BOUNDS_CHECKS"
+      ],
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu99",
+      "intelliSenseMode": "linux-gcc-x64",
+      "configurationProvider": "ms-vscode.makefile-tools"
+    }
+  ],
+  "version": 4
+}
