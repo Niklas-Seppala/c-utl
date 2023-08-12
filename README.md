@@ -12,4 +12,4 @@
 - json
 - yaml
 - utils for TCP/IP, DNS, UDP
-- trees (red-black, Btree, Heaps (min&max))
+- trees (red-black, Btree, Heap)
