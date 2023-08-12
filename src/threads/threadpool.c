@@ -24,42 +24,83 @@ struct ctl_thread_pool {
     volatile bool shutdownFlag;
 };
 
-static void *__CTLRunThread(void *args) {
-    CTLThreadInfo threadInfo = *(CTLThreadInfo *)args;
-    CTLThreadPool threadPool = threadInfo.pool;
+struct ctl_await {
+    pthread_cond_t waitCond;
+    pthread_mutex_t taskMutex;
+    volatile bool ready;
+    void *result;
+};
 
-    while (true) {
-        if (threadPool->shutdownFlag) {
-            pthread_exit(NULL);
-        }
+/**
+ * @brief 
+ * 
+ * @return CTLAwait 
+ */
+static CTLAwait __CTLAwaitCreate(void);
 
-        // Poll the task queue
-        pthread_mutex_lock(&threadPool->queueMutex);
+/**
+ * @brief 
+ * 
+ * @param args 
+ * @return void* 
+ */
+static void *__CTLRunThread(void *args);
 
-        while (!threadPool->shutdownFlag &&
-               CTLQueueIsEmpty(threadPool->taskQueue)) {
-            pthread_cond_wait(&threadPool->queueCond, &threadPool->queueMutex);
-        }
-        CTLTask *queuedTask = CTLQueuePoll(threadPool->taskQueue);
-        pthread_mutex_unlock(&threadPool->queueMutex);
+/**
+ * @brief 
+ * 
+ * @param await 
+ * @param result 
+ */
+static void __CTLAwaitPostResult(CTLAwait await, void *result);
 
-        if (queuedTask != NULL) {
-            // decorate arbitrary arguments with thread info
-            // for the caller.
-            CTLTaskArgs taskArgs;
-            taskArgs.args = queuedTask->args;
-            taskArgs.threadInfo = threadInfo;
-            // execute
-            queuedTask->task(&taskArgs);
-        }
-    }
-}
+/**
+ * @brief 
+ * 
+ * @param args 
+ * @return void* 
+ */
+static void *__CTLRunThread(void *args);
 
-void CTLSubmitTask(CTLThreadPool pool, CTLTask *task) {
+void CTLThreadPoolSubmitTask(CTLThreadPool pool, CTLTask *task) {
     pthread_mutex_lock(&pool->queueMutex);
     CTLQueuePush(pool->taskQueue, task);
     pthread_mutex_unlock(&pool->queueMutex);
     pthread_cond_signal(&pool->queueCond);
+}
+
+void CTLAwaitForAllResults(void * results[], ...) {
+    va_list args;
+    va_start(args, results);
+
+    int i = 0;
+    CTLAwait await = NULL;
+    while ((await = va_arg(args, CTLAwait)) != NULL) {
+        void *result = CTLAwaitForResult(await);
+        results[i++] = result;
+    }
+    va_end(args);
+}
+
+void *CTLAwaitForResult(CTLAwait await) {
+    while (!await->ready) {
+        pthread_cond_wait(&await->waitCond, &await->taskMutex);
+    }
+    pthread_mutex_destroy(&await->taskMutex);
+    pthread_cond_destroy(&await->waitCond);
+
+    void *result = await->result;
+    free(await);
+    return result;
+}
+
+CTLAwait CTLThreadPoolSubmitTaskAsync(CTLThreadPool pool, CTLTask *task) {
+    task->await = __CTLAwaitCreate();
+    pthread_mutex_lock(&pool->queueMutex);
+    CTLQueuePush(pool->taskQueue, task);
+    pthread_mutex_unlock(&pool->queueMutex);
+    pthread_cond_signal(&pool->queueCond);
+    return task->await;
 }
 
 void CTLThreadPoolShutdownAwait(CTLThreadPool pool) {
@@ -99,4 +140,60 @@ CTLThreadPool CTLThreadPoolCreate(const char *name, int nThreads) {
     }
 
     return pool;
+}
+
+static CTLAwait __CTLAwaitCreate(void) {
+    CTLAwait token = malloc(sizeof(struct ctl_await));
+    if (token == NULL) {
+        return NULL;
+    }
+    token->result = NULL;
+    token->ready = false;
+
+    pthread_mutex_init(&token->taskMutex, NULL);
+    pthread_cond_init(&token->waitCond, NULL);
+    
+    return token;
+}
+
+static void __CTLAwaitPostResult(CTLAwait await, void *result) {
+    await->result = result;
+    await->ready = true;
+    pthread_cond_signal(&await->waitCond);
+}
+
+
+static void *__CTLRunThread(void *args) {
+    CTLThreadInfo threadInfo = *(CTLThreadInfo *)args;
+    CTLThreadPool threadPool = threadInfo.pool;
+
+    while (true) {
+        if (threadPool->shutdownFlag) {
+            pthread_exit(NULL);
+        }
+
+        // Poll the task queue
+        pthread_mutex_lock(&threadPool->queueMutex);
+
+        while (!threadPool->shutdownFlag &&
+               CTLQueueIsEmpty(threadPool->taskQueue)) {
+            pthread_cond_wait(&threadPool->queueCond, &threadPool->queueMutex);
+        }
+        CTLTask *queuedTask = CTLQueuePoll(threadPool->taskQueue);
+        pthread_mutex_unlock(&threadPool->queueMutex);
+
+        if (queuedTask != NULL) {
+            // decorate arbitrary arguments with thread info
+            // for the caller.
+            queuedTask->args.threadInfo = threadInfo;
+            
+            // execute
+            void *result = queuedTask->task(&queuedTask->args);
+
+            // post result, if it's await task
+            if (queuedTask->await != NULL) {
+                __CTLAwaitPostResult(queuedTask->await, result);
+            }
+        }
+    }
 }

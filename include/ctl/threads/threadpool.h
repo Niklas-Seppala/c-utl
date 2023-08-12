@@ -3,6 +3,7 @@
 #include "ctl.h"
 
 typedef struct ctl_thread_pool *CTLThreadPool;
+typedef struct ctl_await *CTLAwait;
 
 typedef struct thread_info {
     CTLThreadPool pool;
@@ -15,11 +16,12 @@ typedef struct ctl_task_args {
     void *args;
 } CTLTaskArgs;
 
-typedef void (*CTLThreadTask)(CTLTaskArgs *);
+typedef void *(*CTLThreadTask)(CTLTaskArgs *);
 
 typedef struct ctl_task {
     CTLThreadTask task;
-    void *args;
+    CTLAwait await;
+    CTLTaskArgs args;
 } CTLTask;
 
 /**
@@ -44,6 +46,32 @@ CTLThreadPool CTLThreadPoolCreate(const char *name, int nThreads);
  * @param pool
  * @param task
  */
-void CTLSubmitTask(CTLThreadPool pool, CTLTask *task);
+void CTLThreadPoolSubmitTask(CTLThreadPool pool, CTLTask *task);
+
+
+/**
+ * @brief 
+ * 
+ * @param token 
+ * @return void* 
+ */
+void *CTLAwaitForResult(CTLAwait token);
+
+/**
+ * @brief 
+ * 
+ * @param results 
+ * @param ... 
+ */
+void CTLAwaitForAllResults(void * results[], ...);
+
+/**
+ * @brief 
+ * 
+ * @param pool 
+ * @param task 
+ * @return CTLAwait 
+ */
+CTLAwait CTLThreadPoolSubmitTaskAsync(CTLThreadPool pool, CTLTask *task);
 
 #endif  // CTL_THREADS_THREADPOOL_H
