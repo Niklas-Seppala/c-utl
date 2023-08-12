@@ -228,8 +228,7 @@ START_TEST(testHashMapAllocateKeySet) {
     }
     CTLHashSetFree(&keySet);
 
-    const char *val = CTLHashMapRemove(map, keys[0], 0);
-    printf("%s\n", val);
+    CTLHashMapRemove(map, keys[0], 0);
 
     keySet = CTLHashMapAllocateKeySet(map);
     ck_assert_int_eq(ENTRIES - 1, CTLHashSetSize(keySet));

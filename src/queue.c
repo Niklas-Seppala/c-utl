@@ -1,15 +1,19 @@
 #include "ctl/queue.h"
 
+inline CTLQueue CTLQueueCreate() { return CTLLinkedListCreate(); }
+
+inline void CTLQueueFree(CTLQueue *queue) { CTLLinkedListFree(queue); }
+
 inline bool CTLQueueIsEmpty(const CTLQueue queue) {
     return CTLLinkedListIsEmpty(queue);
 }
 
-inline const void *CTLQueuePeek(const CTLQueue queue) {
+inline void *CTLQueuePeek(const CTLQueue queue) {
     return CTLLinkedListGetFirst(queue);
 }
 
-inline const void *CTLQueuePoll(CTLQueue stack) {
-    return CTLLinkedListRemoveFirst(stack);
+inline void *CTLQueuePoll(CTLQueue queue) {
+    return CTLLinkedListRemoveFirst(queue);
 }
 
 inline void CTLQueuePush(CTLQueue queue, const void *entry) {

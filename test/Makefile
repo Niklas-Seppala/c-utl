@@ -20,6 +20,8 @@ CFILES=$(foreach D,$(CODEDIRS),$(wildcard $(D)/*.c))
 OBJECTS=$(patsubst %.c,%.o,$(CFILES))
 DEPFILES=$(patsubst %.c,%.d,$(CFILES))
 
+export CK_TIMEOUT_MULTIPLIER=10
+
 all: $(BINARY)
 $(BINARY): $(OBJECTS)
 	$(CC) $^ -o $@ ${TEST}
@@ -47,3 +49,6 @@ diff:
 	
 run: $(BINARY)
 	./${BINARY} ${RUN_ARGS}
+
+valgrind: ${BINARY}
+	valgrind ./${BINARY}

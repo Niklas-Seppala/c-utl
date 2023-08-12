@@ -3,6 +3,7 @@
 #include "ctl/io/logger.h"
 #include "testhashmap.h"
 #include "testlinkedlist.h"
+#include "testthreadpool.h"
 #include "testvector.h"
 
 #define SUCCESS_DIVIDER TERM_GRN "█" TERM_RSET
@@ -91,11 +92,21 @@ int main(void) {
     int total3 = srunner_ntests_run(runner3);
     srunner_free(runner3);
 
+    const char *name4 = "Thread pool";
+    Suite *suite4 = suite_create(name4);
+    test_thread_pool_load_cases(suite4);
+    SRunner *runner4 = srunner_create(suite4);
+    srunner_run_all(runner4, CK_VERBOSE);
+    int fail_count4 = srunner_ntests_failed(runner4);
+    int total4 = srunner_ntests_run(runner4);
+    srunner_free(runner4);
+
     asd(name, fail_count, total);
     asd(name2, fail_count2, total2);
     asd(name3, fail_count3, total3);
-    asd("All Tests", fail_count2 + fail_count + fail_count3,
-        total + total2 + total3);
+    asd(name4, fail_count4, total4);
+    asd("All Tests", fail_count2 + fail_count + fail_count3 + fail_count4,
+        total + total2 + total3 + total4);
 
     CTLLogTeardown();
     return (fail_count + fail_count2 + fail_count3 == 0) ? EXIT_SUCCESS

@@ -9,6 +9,20 @@ typedef CTLLinkedList CTLQueue;
 /**
  * @brief
  *
+ * @return CTLQueue
+ */
+CTLQueue CTLQueueCreate();
+
+/**
+ * @brief
+ *
+ * @param queue
+ */
+void CTLQueueFree(CTLQueue *queue);
+
+/**
+ * @brief
+ *
  * @param queue
  * @return true
  * @return false
@@ -19,17 +33,17 @@ bool CTLQueueIsEmpty(const CTLQueue queue);
  * @brief
  *
  * @param queue
- * @return const void*
+ * @return void*
  */
-const void *CTLQueuePeek(const CTLQueue queue);
+void *CTLQueuePeek(const CTLQueue queue);
 
 /**
  * @brief
  *
- * @param stack
- * @return const void*
+ * @param queue
+ * @return void*
  */
-const void *CTLQueuePoll(CTLQueue stack);
+void *CTLQueuePoll(CTLQueue queue);
 
 /**
  * @brief

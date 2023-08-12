@@ -541,7 +541,7 @@ END_TEST
 
 static void checkEntry(const void *entry) { ck_assert_ptr_nonnull(entry); }
 
-START_TEST(testLinkedListForEach) {
+START_TEST(testThreadPool) {
     CTLLinkedList list = CTLLinkedListCreate();
     CTLLinkedListAddAll(list, 4, item1, item2, item3, item4);
     ck_assert_int_eq(4, CTLLinkedListSize(list));
@@ -573,7 +573,7 @@ void test_linked_list_load_cases(Suite *suite) {
     test_add_case(suite, testLinkedListIndexOf);
     test_add_case(suite, testLinkedListCopy);
     test_add_case(suite, testLinkedListIterator);
-    test_add_case(suite, testLinkedListForEach);
+    test_add_case(suite, testThreadPool);
     test_add_case(suite, testLinkedListRemoveLast);
     test_add_case(suite, testLinkedListRemoveFirst);
     test_add_case(suite, testLinkedListRawIterator);

@@ -60,7 +60,7 @@
 #ifdef RT_NULL_CHECKS
 void CTL_NOT_NULL(void *first, ...);
 #define NOT_NULL(...) \
-    { CTL_NOT_NULL(NULL, __VA_ARGS__); }
+    { CTL_NOT_NULL(NULL, __VA_ARGS__, NULL); }
 #endif
 
 #endif  // CTL_ERROR_H

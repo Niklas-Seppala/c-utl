@@ -6,7 +6,7 @@
 
 struct CTLLinkedListNode {
     struct CTLLinkedListNode *next;
-    const void *entry;
+    void *entry;
 };
 
 typedef struct __CTLLinkedList *CTLLinkedList;
@@ -53,10 +53,10 @@ bool CTLLinkedListIsEmpty(CTLLinkedList list);
  * @param list
  * @param entry
  * @param cmp
- * @return const void*
+ * @return void*
  */
-const void *CTLLinkedListFind(CTLLinkedList list, const void *entry,
-                              CTLCompareFunction cmp);
+void *CTLLinkedListFind(CTLLinkedList list, const void *entry,
+                        CTLCompareFunction cmp);
 
 /**
  * @brief
@@ -91,18 +91,18 @@ size_t CTLLinkedListInsertAt(CTLLinkedList list, const void *entry,
  *
  * @param list
  * @param atIndex
- * @return const void*
+ * @return void*
  */
-const void *CTLLinkedListGet(CTLLinkedList list, size_t atIndex);
+void *CTLLinkedListGet(CTLLinkedList list, size_t atIndex);
 
 /**
  * @brief
  *
  * @param list
  * @param atIndex
- * @return const void*
+ * @return void*
  */
-const void *CTLLinkedListRemoveAt(CTLLinkedList list, size_t atIndex);
+void *CTLLinkedListRemoveAt(CTLLinkedList list, size_t atIndex);
 
 /**
  * @brief
@@ -123,28 +123,17 @@ void CTLLinkedListClear(CTLLinkedList list);
  * @brief
  *
  * @param list
- * @return const void*
+ * @return void*
  */
-const void *CTLLinkedListGetFirst(CTLLinkedList list);
+void *CTLLinkedListGetFirst(CTLLinkedList list);
 
 /**
  * @brief
  *
  * @param list
- * @return const void*
+ * @return void*
  */
-const void *CTLLinkedListGetLast(CTLLinkedList list);
-
-/**
- * @brief
- *
- * @param list
- * @param entry
- * @param compareFunction
- * @return const void*
- */
-const void *CTLLinkedListRemove(CTLLinkedList list, const void *entry,
-                                CTLCompareFunction compareFunction);
+void *CTLLinkedListGetLast(CTLLinkedList list);
 
 /**
  * @brief
@@ -152,9 +141,10 @@ const void *CTLLinkedListRemove(CTLLinkedList list, const void *entry,
  * @param list
  * @param entry
  * @param compareFunction
- * @return const void*
+ * @return void*
  */
-const void *CTLLinkedListRemoveLast(CTLLinkedList list);
+void *CTLLinkedListRemove(CTLLinkedList list, const void *entry,
+                          CTLCompareFunction compareFunction);
 
 /**
  * @brief
@@ -162,9 +152,19 @@ const void *CTLLinkedListRemoveLast(CTLLinkedList list);
  * @param list
  * @param entry
  * @param compareFunction
- * @return const void*
+ * @return void*
  */
-const void *CTLLinkedListRemoveFirst(CTLLinkedList list);
+void *CTLLinkedListRemoveLast(CTLLinkedList list);
+
+/**
+ * @brief
+ *
+ * @param list
+ * @param entry
+ * @param compareFunction
+ * @return void*
+ */
+void *CTLLinkedListRemoveFirst(CTLLinkedList list);
 
 /**
  * @brief

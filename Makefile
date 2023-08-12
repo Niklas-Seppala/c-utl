@@ -2,9 +2,8 @@ COMPLETE_PRINT=\033[1;32mSuccess \033[0m
 
 BUILD=0.0.1
 BINARY=ctl-${BUILD}
-CODEDIRS=. src src/io
+CODEDIRS=. src src/io src/net src/threads
 INCDIRS=./include/
-
 CC=gcc
 DEBUG=-g -DDEBUG
 MKDIR_P = mkdir -p
@@ -44,8 +43,8 @@ diff:
 run: $(BINARY)
 	${BINARY} ${RUN_ARGS}
 
-valgrind: build
-	valgrind --leak-check=full ${BINARY} ${RUN_ARGS}
+# valgrind: build
+# 	valgrind --leak-check=full ${BINARY} ${RUN_ARGS}
 
 unit-test:
 	@make run -C ./test
@@ -53,5 +52,8 @@ unit-test:
 compile-unit-test:
 	@make -C ./test
 
-memcheck-test:
+valgrind:
+	@make valgrind -C ./test
+
+memcheck-test: 
 	@make run MEMCHECK=-fsanitize=address S_LIBSAN=-static-libasan -C ./test
